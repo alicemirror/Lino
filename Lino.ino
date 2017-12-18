@@ -62,6 +62,7 @@ void setup() {
   attachInterrupt(IRQ_SETTING_BUTTON, switchOption, LOW);
   attachInterrupt(IRQ_LEFT_LIMITER, switchLeft, CHANGE);
   attachInterrupt(IRQ_RIGHT_LIMITER, switchRight, CHANGE);
+  attachInterrupt(IRQ_EMERGENCY_BUTTON, emergency, CHANGE);
 }
 
 /**
@@ -146,14 +147,16 @@ void loop(){
   /**
    * Change the current buttons options, depending on the status
    * 
-   * If motor is running, the onvly available option is OPTION1 
+   * If motor is running, the only available option is OPTION1 
    * Start/Stop and Info commands.
+   * 
+   * Emergency status avoid the controls and display update.
    * 
    * Option button rotates over all the available options excluding the emergency
    * controlled by the emergency button
    */
   void switchOption(){
-    if(sysStatus.motorOn == false) {
+    if( (sysStatus.motorOn == false) || (sysStatus.emergency) ) {
       detachInterrupt(IRQ_SETTING_BUTTON);
       sysStatus.optionChanged = true;
       sysStatus.optionsLevel++;
@@ -168,6 +171,22 @@ void loop(){
       _debugSerial(String(sysStatus.optionsLevel));
 #endif
     } // Motor not running, options cycle
+  }
+
+  /**
+   * Set the emergency button status on change
+   */
+  void emergency(){
+    detachInterrupt(IRQ_EMERGENCY_BUTTON);
+    if(digitalRead(EMERGENCY_BUTTON)){
+      sysStatus.emergency = false;
+      digitalWrite(EMERGENCY_LED, LOW);
+    }
+    else {
+      sysStatus.emergency = true;
+      digitalWrite(EMERGENCY_LED, HIGH);
+    }
+    attachInterrupt(IRQ_EMERGENCY_BUTTON, emergency, CHANGE);
   }
 
   // ******************************************************

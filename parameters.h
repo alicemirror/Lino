@@ -24,6 +24,9 @@
 #define LCD_OPTION4 4
 #define LCD_OPTION5 5
 
+#define STATUS_EMERGENCY 1
+#define STATUS_RUNNING 2
+
 /**
  * State of the enriconment options
  */
@@ -36,6 +39,7 @@ struct options {
   volatile boolean emergency;      ///< Emergency status
   volatile boolean rightLimit;     ///< Detected the right endstop switch
   volatile boolean leftLimit;      ///< Detected the left endstop switch
+  int appStatus;          ///< Status of the application
 };
 
 #endif
