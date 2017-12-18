@@ -13,6 +13,9 @@
 #include "displaystrings.h"
 #include "parameters.h"
 
+// Undef to remove serial debug
+#define _DEBUG
+
 // initialize the library by associating any needed LCD interface pin
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
@@ -22,7 +25,10 @@ options sysStatus;
  * \breif Initialization function
  */
 void setup() {
-  
+
+#ifdef _DEBUG
+  Serial.begin(38400);
+#endif
   lcd.begin(LCD_COL, LCD_ROWS);
 
   // initialize digital pins
@@ -162,12 +168,27 @@ void loop(){
       if(sysStatus.optionsLevel >= MAXOPTIONS){
         sysStatus.optionsLevel = LCD_OPTION1;
       } // cycle options
-      delay(50);
+#ifdef _DEBUG
+      _debugSerial("*** Opton button interrupt callback");
+      _debugSerial("    New option number:");
+      _debugSerial(String(sysStatus.optionsLevel));
+#endif
     } // Motor not running, options cycle
     else {
       // Nothing done, re-enable the interrupts
       interrupts();
+#ifdef _DEBUG
+      _debugSerial("*** Motor running, ignore option button");
+#endif
     }
   }
 
-  
+  /**
+   * Debug function. Send a debug string to the serial to USB port.
+   */
+#ifdef _DEBUG
+  void _debugSerial(String m) {
+    Serial.println(m);
+  }
+#endif
+
