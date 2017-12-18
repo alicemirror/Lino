@@ -16,29 +16,26 @@
 #define DEFAULTCYCLES 1       ///< Number of cycles by default
 #define DEFAULTSPEED 30       ///< Default motion speed in seconds per cycle
 #define DEFAULTOPTION 1       ///< Default startup option shown
-#define MAXOPTIONS 6          ///< Max number of options (corresponding to emergency button)
+#define MAXOPTIONS 5          ///< Max number of options (corresponding to emergency button)
 
 #define LCD_OPTION1 1
 #define LCD_OPTION2 2
 #define LCD_OPTION3 3
 #define LCD_OPTION4 4
 #define LCD_OPTION5 5
-#define LCD_OPTION6 6
 
 /**
  * State of the enriconment options
  */
 struct options {
-  int optionsLevel;       ///< Current option level
-  boolean optionChanged;  ///< The option button has been pressed and should be processed
+  volatile int optionsLevel;       ///< Current option level
+  volatile boolean optionChanged;  ///< The option button has been pressed and should be processed
   int cycleTime;          ///< Motor speed expressed in seconds per cycle
   int numCycles;          ///< Number of cycles
   boolean motorOn;        ///< Motor running status
-  boolean emergency;      ///< Emergency status
-  boolean rightLimit;     ///< Detected the right endstop switch
-  boolean leftLimit;      ///< Detected the left endstop switch
-  
-  
+  volatile boolean emergency;      ///< Emergency status
+  volatile boolean rightLimit;     ///< Detected the right endstop switch
+  volatile boolean leftLimit;      ///< Detected the left endstop switch
 };
 
 #endif

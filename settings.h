@@ -20,9 +20,16 @@
 #define LEFT_LED 10           ///< Left limiter switch signal
 #define RIGHT_LED 11          ///< Right limniter switch signal
 #define SPEED_CONTROL A0      ///< Analog input for speed control potentiometer
-#define LEFT_LIMITER 2        ///< Left limiter switch (interrupt controlle)
+
+#define LEFT_LIMITER 2        ///< Left limiter switch (interrupt controlled)
+#define IRQ_LEFT_LIMITER 0    ///< Left limiter switch interrupt number
+
 #define RIGHT_LIMITER 3       ///< Right limiter switch (interrupt controlled)
+#define IRQ_RIGHT_LIMITER 1   ///< Right limiter switch interrupt number
+
 #define SETTING_BUTTON 18     ///< Options setting button (interrutp controlled)
+#define IRQ_SETTING_BUTTON 5  ///< Options setting button interrupt number
+
 #define ACTION_BUTTON_1 22    ///< Action button 1
 #define ACTION_BUTTON_2 23    ///< Action button 2
 #define EMERGENCY_BUTTON 19   ///< Emergency button. Stop immediately every activity (interrupt controlled)

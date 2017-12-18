@@ -20,7 +20,7 @@
 #ifdef ITALIAN
 
 #define START1 "BalearicDynamics"
-#define START2 "Lino 1.0.0 IT"
+#define START2 "Lino 1.0.2 IT"
 
 // Confirm-cancel option
 #define OPTION_OK_NO "   OK   Annulla"
@@ -40,6 +40,10 @@
 #define OPTION2AB_11 "  Info    Avvia"
 #define OPTION2AB_12 "  Info    STOP"
 
+// --- Option1.A level 2
+#define OPTION1A_11 "Tempo/ciclo.:"
+#define OPTION1A_12 "N.Cicli:"
+
 // --- Option3 level 1
 #define OPTION3 "  Set parametri"
 #define OPTION3AB "Tempo  Rotazioni"
@@ -53,16 +57,12 @@
 #define OPTION3B_12 "Ruotare Manopola"
 
 // --- Option4 level 1
-#define OPTION4 "Tempo/ciclo.:"
-#define OPTION4AB "N.Cicli:"
+#define OPTION4 "Salva impostaz."
+#define OPTION4AB OPTION_OK_NO
 
-// --- Option5 level 1
-#define OPTION5 "Salva impostaz."
-#define OPTION5AB OPTION_OK_NO
-
-// --- Option5.A level 2
-#define OPTION5A_11 "  Impostazioni"
-#define OPTION5AB_12 " Dati salvati
+// --- Option4.A level 2
+#define OPTION4A_11 "  Impostazioni"
+#define OPTION4AB_12 " Dati salvati
 
 #endif
 

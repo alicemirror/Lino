@@ -14,7 +14,7 @@
 #include "parameters.h"
 
 // Undef to remove serial debug
-#define _DEBUG
+#undef _DEBUG
 
 // initialize the library by associating any needed LCD interface pin
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
@@ -38,7 +38,7 @@ void setup() {
 
   pinMode(LEFT_LIMITER, INPUT);
   pinMode(LEFT_LIMITER, INPUT);
-  pinMode(SETTING_BUTTON, INPUT);
+  pinMode(SETTING_BUTTON, INPUT_PULLUP);
   pinMode(ACTION_BUTTON_1, INPUT);
   pinMode(ACTION_BUTTON_2, INPUT);
   pinMode(EMERGENCY_BUTTON, INPUT);
@@ -59,7 +59,9 @@ void setup() {
   lcdShowOption();
 
   // Enable the interrupt vectors
-  attachInterrupt(digitalPinToInterrupt(SETTING_BUTTON), switchOption, LOW);
+  attachInterrupt(IRQ_SETTING_BUTTON, switchOption, LOW);
+  attachInterrupt(IRQ_LEFT_LIMITER, switchLeft, CHANGE);
+  attachInterrupt(IRQ_RIGHT_LIMITER, switchRight, CHANGE);
 }
 
 /**
@@ -72,9 +74,9 @@ void loop(){
     lcd.clear();
     sysStatus.optionChanged = false;
     lcdShowOption();
-    delay(50);
     }
-    interrupts(); // re-enable the interrupts
+    delay(500);
+    attachInterrupt(IRQ_SETTING_BUTTON, switchOption, LOW); // re-enable the interrupts
   }
 
   // ******************************************************
@@ -129,13 +131,7 @@ void loop(){
         lcd.setCursor(0,1);
         lcd.print(OPTION4AB);
         break;
-      case LCD_OPTION5:
-        lcd.setCursor(0,0);
-        lcd.print(OPTION5);
-        lcd.setCursor(0,1);
-        lcd.print(OPTION5AB);
-        break;
-      case LCD_OPTION6:     // Emergency STOP
+      case LCD_OPTION5:     // Emergency STOP
         lcd.setCursor(0,0);
         lcd.print(OPTIONX);
         lcd.setCursor(0,1);
@@ -147,7 +143,6 @@ void loop(){
   // ******************************************************
   // Input buttons functions
   // ******************************************************
-
   /**
    * Change the current buttons options, depending on the status
    * 
@@ -158,9 +153,8 @@ void loop(){
    * controlled by the emergency button
    */
   void switchOption(){
-    // Remporary disable interrupts
-    noInterrupts();
     if(sysStatus.motorOn == false) {
+      detachInterrupt(IRQ_SETTING_BUTTON);
       sysStatus.optionChanged = true;
       sysStatus.optionsLevel++;
       // Check for max number of options reached
@@ -174,13 +168,41 @@ void loop(){
       _debugSerial(String(sysStatus.optionsLevel));
 #endif
     } // Motor not running, options cycle
-    else {
-      // Nothing done, re-enable the interrupts
-      interrupts();
-#ifdef _DEBUG
-      _debugSerial("*** Motor running, ignore option button");
-#endif
+  }
+
+  // ******************************************************
+  // Limiter switches
+  // ******************************************************
+  /**
+   * Set the limiter switch status on change
+   */
+  void switchLeft(){
+    detachInterrupt(IRQ_LEFT_LIMITER);
+    if(digitalRead(LEFT_LIMITER)){
+      sysStatus.leftLimit = false;
+      digitalWrite(LEFT_LED, LOW);
     }
+    else {
+      sysStatus.leftLimit = true;
+      digitalWrite(LEFT_LED, HIGH);
+    }
+    attachInterrupt(IRQ_LEFT_LIMITER, switchLeft, CHANGE);
+  }
+
+  /**
+   * Set the limiter switch status on change
+   */
+  void switchRight(){
+    detachInterrupt(IRQ_RIGHT_LIMITER);
+    if(digitalRead(RIGHT_LIMITER)){
+      sysStatus.rightLimit = false;
+      digitalWrite(RIGHT_LED, LOW);
+    }
+    else {
+      sysStatus.rightLimit = true;
+      digitalWrite(RIGHT_LED, HIGH);
+    }
+    attachInterrupt(IRQ_RIGHT_LIMITER, switchRight, CHANGE);
   }
 
   /**
