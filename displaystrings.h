@@ -13,14 +13,14 @@
 #define _STRINGS
 
 // Language settings
-#undef ENGLISH "EN"
+#define ENGLISH "EN"
 #define ITALIAN "IT"
-#undef SPANISH "ES"
+#define SPANISH "ES"
 
 #ifdef ITALIAN
 
 #define START1 "BalearicDynamics"
-#define START2 "Lino 1.0.5D IT"
+#define START2 "Lino 1.0.6 IT"
 
 // Confirm-cancel option
 #define OPTION_OK_NO "   OK   Annulla"
@@ -33,16 +33,32 @@
 #define OPTION1 "Inizio attivita'"
 #define OPTION1AB "  Reset   Zero"
 
+// --- Option1.A level 2
+#define OPTION1A_11 "Reset parametri"
+#define OPTION1A_12 "Completato"
+
+// --- Option1.B level 2
+#define OPTION1B_11 "Auto-zero"
+#define OPTION1B_12 "Completato"
+
 // --- Option2 level 1
 #define OPTION2 "  Esegui azione"
 // Depending on the machine status, it is shown one of
 // the two alternative options (start / stop)
 #define OPTION2AB_11 "  Info    Avvia"
-#define OPTION2AB_12 "  Info    STOP"
+#define OPTION2AB_12 " Rotaz.   STOP"
 
-// --- Option1.A level 2
-#define OPTION1A_11 "Tempo/ciclo.:"
-#define OPTION1A_12 "N.Cicli:"
+// --- Option2.A level 2
+#define OPTION2A_11 "Tempo: "
+#define OPTION2A_12 "N.Cicli: "
+
+// --- Option2.B level 2
+#define OPTION2B_11 "Start/Stop"
+#define OPTION2B_12 "In corso..."
+
+// --- Option2.C level 2
+#define OPTION2C_11 "Rotazione motore"
+#define OPTION2C_12 "In corso..."
 
 // --- Option3 level 1
 #define OPTION3 "  Set parametri"
@@ -62,7 +78,7 @@
 
 // --- Option4.A level 2
 #define OPTION4A_11 "  Impostazioni"
-#define OPTION4AB_12 " Dati salvati
+#define OPTION4AB_12 " Dati salvati"
 
 #endif
 

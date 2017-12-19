@@ -16,7 +16,7 @@
 #include "parameters.h"
 
 // Undef to remove serial debug
-#define _DEBUG
+#undef _DEBUG
 
 // initialize the library by associating any needed LCD interface pin
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
@@ -77,13 +77,17 @@ void loop(){
     sysStatus.optionChanged = false;
     lcdShowOption();
     }
+
     // If we are in emergency status, the setting button is nore reset until
     // the emergency status is disabled
     if(sysStatus.emergency == false) {
       delay(500);
       attachInterrupt(IRQ_SETTING_BUTTON, switchOption, LOW); // re-enable the interrupts
+      // Check for command buttons. Command buttons can't be executed
+      // when the system is in emergency state
+      doCommand(checkCommandButtons());
     }
-  }
+  } // loop
 
   // ******************************************************
   // EEPROM functions
@@ -211,6 +215,91 @@ void loop(){
     } // Motor not running, options cycle
   }
 
+  /**
+   * Check if a command button has been pressed and return the corresponding button ID
+   * else return 0
+   */
+  int checkCommandButtons() {
+    if(digitalRead(ACTION_BUTTON_1) == false){
+      return COMMAND_LEFT;
+    } else if(digitalRead(ACTION_BUTTON_2) == false) {
+      return COMMAND_RIGHT;
+    } else {
+      return COMMAND_NOCOMMAND;
+    }
+  }
+
+  /**
+   * Execute the command button depending on the state of the system.
+   */
+  void doCommand(int side) {
+    if(side != COMMAND_NOCOMMAND) {
+      lcd.clear();
+      switch(sysStatus.optionsLevel) {
+        case LCD_OPTION1:             // Reset, Zero
+          if(side == COMMAND_LEFT) {
+            resetConfiguration();     // Reset the EEPROM configuration to the defaults
+            lcd.setCursor(0,0);
+            lcd.print(OPTION1A_11);
+            lcd.setCursor(0,1);
+            lcd.print(OPTION1A_12);
+          } // left
+          else if(side == COMMAND_RIGHT) {  // Motor auto-zero (both sides)
+            lcd.setCursor(0,0);
+            lcd.print(OPTION1B_11);
+            lcd.setCursor(0,1);
+            lcd.print(OPTION1B_12);
+          }
+          break;
+        case LCD_OPTION2:
+          // Left command available only when motor is not runnig
+          if(side == COMMAND_LEFT) {
+            if(sysStatus.motorOn == false) {
+              lcd.setCursor(0,0);
+              lcd.print(OPTION2A_11);
+              lcd.print(String(savedParameters.cycleTime));
+              lcd.setCursor(0,1);
+              lcd.print(OPTION2A_12);
+              lcd.print(String(savedParameters.numCycles));
+            }
+            else {
+              lcd.setCursor(0,0);
+              lcd.print(OPTION2C_11);
+              lcd.print(String(savedParameters.cycleTime));
+              lcd.setCursor(0,1);
+              lcd.print(OPTION2C_12);
+              lcd.print(String(savedParameters.numCycles));
+              sysStatus.isRotating = true;
+            }
+          }
+          else if(side == COMMAND_RIGHT) {
+              lcd.setCursor(0,0);
+              lcd.print(OPTION2B_11);
+              lcd.setCursor(0,1);
+              lcd.print(OPTION2B_12);
+            sysStatus.motorOn = !sysStatus.motorOn;
+            sysStatus.isRotating = false;
+          }
+          break;
+//        case LCD_OPTION3:
+//          lcd.setCursor(0,0);
+//          lcd.print(OPTION3);
+//          lcd.setCursor(0,1);
+//          lcd.print(OPTION3AB);
+//          break;
+//        case LCD_OPTION4:
+//          lcd.setCursor(0,0);
+//          lcd.print(OPTION4);
+//          lcd.setCursor(0,1);
+//          lcd.print(OPTION4AB);
+//          break;
+      } // command processing
+      delay(COMMAND_DELAY); // Show the message then continue
+      lcd.clear();
+      lcdShowOption();
+    } // process command side (not 0)
+  }
+  
   /**
    * Set the emergency button status on change
    */

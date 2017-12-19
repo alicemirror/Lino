@@ -35,8 +35,8 @@
 #define EMERGENCY_BUTTON 19     ///< Emergency button. Stop immediately every activity (interrupt controlled)
 #define IRQ_EMERGENCY_BUTTON 4  ///< Options setting button interrupt number
 
-#define ACTION_BUTTON_1 22    ///< Action button 1
-#define ACTION_BUTTON_2 23    ///< Action button 2
+#define ACTION_BUTTON_1 23    ///< Action button 1
+#define ACTION_BUTTON_2 22    ///< Action button 2
 
 // *********************
 // Display pin settings
@@ -52,6 +52,7 @@
 #define LCD_COL 16    ///< LCD number of columns
 
 #define WELCOME_DELAY 5000   ///< Delay (ms) of the welcome message when system starts
+#define COMMAND_DELAY 2000   ///< Delay (ms) showing the command execution result
 #endif
 
 
