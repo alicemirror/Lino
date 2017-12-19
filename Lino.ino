@@ -9,17 +9,20 @@
  *  Licensed under GNU LGPL 3.0  
  */
 
+#include <EEPROM.h>
+#include <Streaming.h>
 #include "settings.h"
 #include "displaystrings.h"
 #include "parameters.h"
 
 // Undef to remove serial debug
-#undef _DEBUG
+#define _DEBUG
 
 // initialize the library by associating any needed LCD interface pin
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
 options sysStatus;
+configObject savedParameters;
 
 /**
  * \breif Initialization function
@@ -48,8 +51,6 @@ void setup() {
   // Initialize the options panel
   sysStatus.optionsLevel = DEFAULTOPTION;
   sysStatus.optionChanged = false;
-  sysStatus.cycleTime = DEFAULTCYCLES;
-  sysStatus.numCycles = DEFAULTSPEED;
   sysStatus.motorOn = false;
   sysStatus.emergency = false;
   sysStatus.rightLimit = false;
@@ -83,6 +84,33 @@ void loop(){
       attachInterrupt(IRQ_SETTING_BUTTON, switchOption, LOW); // re-enable the interrupts
     }
   }
+
+  // ******************************************************
+  // EEPROM functions
+  // ******************************************************
+  /**
+   * Read the last saved configuration stored in the EEPROM
+   */
+  void loadConfiguration() {
+    EEPROM.get(EEPROM_ADDRESS, savedParameters);
+  }
+
+  /**
+   * Save the current configuration in the EEPROM
+   */
+   void saveConfiguration() {
+      EEPROM.put(EEPROM_ADDRESS, savedParameters);
+   }
+
+   /**
+    * Reset the configuration to the default parameters
+    */
+    void resetConfiguration() {
+      // Initialize the parameters to the default
+      savedParameters.cycleTime = DEFAULTSPEED;
+      savedParameters.numCycles = DEFAULTCYCLES;
+      EEPROM.put(EEPROM_ADDRESS, savedParameters);
+    }
 
   // ******************************************************
   // Display functions
@@ -141,6 +169,11 @@ void loop(){
         lcd.print(OPTIONX);
         lcd.setCursor(0,1);
         lcd.print(OPTIONXAB);
+#ifdef _DEBUG
+      // Test the EEPROM read/write
+      _debugSerial("*** Opton button interrupt callback");
+      _debugSerialEndl();
+#endif
         break;
     }
   }
@@ -171,8 +204,9 @@ void loop(){
       } // cycle options
 #ifdef _DEBUG
       _debugSerial("*** Opton button interrupt callback");
-      _debugSerial("    New option number:");
+      _debugSerial(" - New option number:");
       _debugSerial(String(sysStatus.optionsLevel));
+      _debugSerialEndl();
 #endif
     } // Motor not running, options cycle
   }
@@ -200,6 +234,29 @@ void loop(){
       sysStatus.optionChanged = true; // Set the option status changed
     }
     attachInterrupt(IRQ_EMERGENCY_BUTTON, emergency, CHANGE);
+#ifdef _DEBUG
+    // Test EEPROM
+    _debugSerial("*** EEPROM Test, saving default values");
+    _debugSerialEndl();
+    resetConfiguration();
+
+    _debugSerial("*** Default saved, configuration object set to zero ");
+    savedParameters.cycleTime = 0;
+    savedParameters.numCycles = 0;
+    _debugSerial("*** cycleTime = ");
+    _debugSerial(String(savedParameters.cycleTime));
+    _debugSerial(", numCycles = ");
+    _debugSerial(String(savedParameters.numCycles));
+    _debugSerialEndl();
+
+    _debugSerial("*** Load configuration from EEPROM");
+    loadConfiguration();
+    _debugSerial("*** cycleTime = ");
+    _debugSerial(String(savedParameters.cycleTime));
+    _debugSerial(", numCycles = ");
+    _debugSerial(String(savedParameters.numCycles));
+    _debugSerialEndl();
+#endif
   }
 
   // ******************************************************
@@ -242,7 +299,11 @@ void loop(){
    */
 #ifdef _DEBUG
   void _debugSerial(String m) {
-    Serial.println(m);
+    Serial << m;
+  }
+
+  void _debugSerialEndl() {
+    Serial << endl;
   }
 #endif
 
