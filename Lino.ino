@@ -76,8 +76,12 @@ void loop(){
     sysStatus.optionChanged = false;
     lcdShowOption();
     }
-    delay(500);
-    attachInterrupt(IRQ_SETTING_BUTTON, switchOption, LOW); // re-enable the interrupts
+    // If we are in emergency status, the setting button is nore reset until
+    // the emergency status is disabled
+    if(sysStatus.emergency == false) {
+      delay(500);
+      attachInterrupt(IRQ_SETTING_BUTTON, switchOption, LOW); // re-enable the interrupts
+    }
   }
 
   // ******************************************************
@@ -179,12 +183,21 @@ void loop(){
   void emergency(){
     detachInterrupt(IRQ_EMERGENCY_BUTTON);
     if(digitalRead(EMERGENCY_BUTTON)){
+      // If the emergency status off comes from an emergency recovery
+      // condition, the button IRQ, status and option should be reset
+      if(sysStatus.emergency = true) {
+        sysStatus.optionsLevel = LCD_OPTION1; // First option on the display
+        sysStatus.optionChanged = true; // Set the option status changed
+      }
       sysStatus.emergency = false;
       digitalWrite(EMERGENCY_LED, LOW);
     }
     else {
-      sysStatus.emergency = true;
-      digitalWrite(EMERGENCY_LED, HIGH);
+      // We are in emergency status
+      sysStatus.emergency = true; // Set the emergency flag
+      digitalWrite(EMERGENCY_LED, HIGH);  // Enable the emergency LED 
+      sysStatus.optionsLevel = LCD_OPTION5; // Force the emergency option status ID
+      sysStatus.optionChanged = true; // Set the option status changed
     }
     attachInterrupt(IRQ_EMERGENCY_BUTTON, emergency, CHANGE);
   }
