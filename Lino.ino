@@ -275,20 +275,44 @@ void loop(){
             }
           }
           else if(side == COMMAND_RIGHT) {
-              lcd.setCursor(0,0);
-              lcd.print(OPTION2B_11);
-              lcd.setCursor(0,1);
-              lcd.print(OPTION2B_12);
+            lcd.setCursor(0,0);
+            lcd.print(OPTION2B_11);
+            lcd.setCursor(0,1);
+            lcd.print(OPTION2B_12);
             sysStatus.motorOn = !sysStatus.motorOn;
             sysStatus.isRotating = false;
           }
           break;
-//        case LCD_OPTION3:
-//          lcd.setCursor(0,0);
-//          lcd.print(OPTION3);
-//          lcd.setCursor(0,1);
-//          lcd.print(OPTION3AB);
-//          break;
+        case LCD_OPTION3:               // Parameters setting
+          if(side == COMMAND_LEFT) {
+            lcd.setCursor(0,0);
+            lcd.print(OPTION3A_11);
+            lcd.setCursor(0,1);
+            lcd.print(OPTION3A_12);
+            // Get value settings
+            sysStatus.appStatus = APP_SET_TIME;
+            analogSet();
+            lcd.clear();
+            lcd.setCursor(0,0);
+            lcd.print(OPTION3C_11);
+            lcd.setCursor(0,1);
+            lcd.print(OPTION3C_12);
+          }
+          else  if(side == COMMAND_RIGHT) {
+            lcd.setCursor(0,0);
+            lcd.print(OPTION3B_11);
+            lcd.setCursor(0,1);
+            lcd.print(OPTION3B_12);
+            // Get value settings
+            sysStatus.appStatus = APP_SET_CYCLES;
+            analogSet();
+            lcd.clear();
+            lcd.setCursor(0,0);
+            lcd.print(OPTION3D_11);
+            lcd.setCursor(0,1);
+            lcd.print(OPTION3D_12);
+          }
+          break;
 //        case LCD_OPTION4:
 //          lcd.setCursor(0,0);
 //          lcd.print(OPTION4);
@@ -349,6 +373,34 @@ void loop(){
     _debugSerialEndl();
 #endif
   }
+
+  // ******************************************************
+  // Analog reading and parameters setting
+  // ******************************************************
+  /**
+   * Read the user settings for the current parameter
+   */
+   void analogSet() {
+    int analog;
+
+    // Wait few ms to avoid that the previous button is read again by
+    // the function
+    delay(500);
+
+    // Read the analog value from potentiometer until the OK button
+    // is not pressed
+    while(digitalRead(ACTION_BUTTON_2) == HIGH) {
+      lcd.setCursor(14,0);
+      analog = analogRead(ANALOG_SETTING);
+      if(sysStatus.appStatus == APP_SET_TIME) {
+        savedParameters.cycleTime = map(analog, MIN_ANALOG, MAX_ANALOG, MIN_TIME, MAX_TIME);
+        lcd.print(String(savedParameters.cycleTime));
+      } else if(sysStatus.appStatus == APP_SET_CYCLES) {
+        savedParameters.numCycles = map(analog, MIN_ANALOG, MAX_ANALOG, MIN_CYCLES, MAX_CYCLES);
+        lcd.print(String(savedParameters.numCycles));
+      }
+    }
+   }
 
   // ******************************************************
   // Limiter switches

@@ -20,7 +20,7 @@
 #ifdef ITALIAN
 
 #define START1 "BalearicDynamics"
-#define START2 "Lino 1.0.7 IT"
+#define START2 "Lino 1.0.8 IT"
 
 // Confirm-cancel option
 #define OPTION_OK_NO "   OK   Annulla"
@@ -29,6 +29,7 @@
 #define OPTIONX "   Emergenza!"
 #define OPTIONXAB "  STOP Manuale"
 
+// ******************************************* Option 1 - Start activity
 // --- Option1 level 1
 #define OPTION1 "Inizio attivita'"
 #define OPTION1AB "  Reset   Zero"
@@ -41,6 +42,7 @@
 #define OPTION1B_11 "Auto-zero"
 #define OPTION1B_12 "Completato"
 
+// ******************************************* Option 1 - Execute action
 // --- Option2 level 1
 #define OPTION2 "  Esegui azione"
 // Depending on the machine status, it is shown one of
@@ -60,18 +62,28 @@
 #define OPTION2C_11 "Rotazione motore"
 #define OPTION2C_12 "In corso..."
 
+// ******************************************* Option 1 - Parameters setting
 // --- Option3 level 1
 #define OPTION3 "  Set parametri"
 #define OPTION3AB "Tempo  Rotazioni"
 
 // --- Option3.A level 2
 #define OPTION3A_11 "Tempo 1 ciclo:"
-#define OPTION3A_12 "Ruotare Manopola"
+#define OPTION3A_12 "Ruota      Ok"
 
 // --- Option3.B level 2
-#define OPTION3B_11 "Num. cicli:"
-#define OPTION3B_12 "Ruotare Manopola"
+#define OPTION3B_11 "Cicli:"
+#define OPTION3B_12 "Ruota      Ok"
 
+// --- Option3.C level 3
+#define OPTION3C_11 "Impostaz. Tempo"
+#define OPTION3C_12 "Completato"
+
+// --- Option3.D level 3
+#define OPTION3D_11 "Impostaz. Cicli"
+#define OPTION3D_12 "Completato"
+
+// ******************************************* Option 1 - Save settings
 // --- Option4 level 1
 #define OPTION4 "Salva impostaz."
 #define OPTION4AB OPTION_OK_NO

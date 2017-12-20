@@ -21,7 +21,7 @@
 #define RIGHT_LED 11          ///< Right limniter switch signal
 #define EMERGENCY_LED 24      ///< Emergency LED signaling the status together with the display
 
-#define SPEED_CONTROL A0      ///< Analog input for speed control potentiometer
+#define ANALOG_SETTING A0      ///< Analog input potentiometer for parameters setting
 
 #define LEFT_LIMITER 2        ///< Left limiter switch (interrupt controlled)
 #define IRQ_LEFT_LIMITER 0    ///< Left limiter switch interrupt number
