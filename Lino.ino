@@ -313,12 +313,21 @@ void loop(){
             lcd.print(OPTION3D_12);
           }
           break;
-//        case LCD_OPTION4:
-//          lcd.setCursor(0,0);
-//          lcd.print(OPTION4);
-//          lcd.setCursor(0,1);
-//          lcd.print(OPTION4AB);
-//          break;
+        case LCD_OPTION4:
+          if(side == COMMAND_LEFT) {
+            saveConfiguration();
+            lcd.setCursor(0,0);
+            lcd.print(OPTION4A_11);
+            lcd.setCursor(0,1);
+            lcd.print(OPTION4A_12);
+          }
+          else  if(side == COMMAND_RIGHT) {
+            lcd.setCursor(0,0);
+            lcd.print(OPTION4B_11);
+            lcd.setCursor(0,1);
+            lcd.print(OPTION4B_12);
+          }
+          break;
       } // command processing
       delay(COMMAND_DELAY); // Show the message then continue
       lcd.clear();

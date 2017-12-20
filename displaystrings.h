@@ -20,7 +20,7 @@
 #ifdef ITALIAN
 
 #define START1 "BalearicDynamics"
-#define START2 "Lino 1.0.8 IT"
+#define START2 "Lino 1.0.9 IT"
 
 // Confirm-cancel option
 #define OPTION_OK_NO "   OK   Annulla"
@@ -90,7 +90,11 @@
 
 // --- Option4.A level 2
 #define OPTION4A_11 "  Impostazioni"
-#define OPTION4AB_12 " Dati salvati"
+#define OPTION4A_12 "  Dati salvati"
+
+// --- Option4.b level 2
+#define OPTION4B_11 "  Salvataggio"
+#define OPTION4B_12 "  Annullato"
 
 #endif
 
