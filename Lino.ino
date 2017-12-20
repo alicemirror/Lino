@@ -59,6 +59,9 @@ void setup() {
   // Show the initial option on the LCD
   lcdShowOption();
 
+  // Get the last saved configuration parameters from EEPROM
+  loadConfiguration();
+
   // Enable the interrupt vectors
   attachInterrupt(IRQ_SETTING_BUTTON, switchOption, LOW);
   attachInterrupt(IRQ_LEFT_LIMITER, switchLeft, CHANGE);
@@ -252,9 +255,8 @@ void loop(){
           }
           break;
         case LCD_OPTION2:
-          // Left command available only when motor is not runnig
           if(side == COMMAND_LEFT) {
-            if(sysStatus.motorOn == false) {
+            if(sysStatus.motorOn == false) {  // Motor stopped, show info
               lcd.setCursor(0,0);
               lcd.print(OPTION2A_11);
               lcd.print(String(savedParameters.cycleTime));
@@ -262,7 +264,7 @@ void loop(){
               lcd.print(OPTION2A_12);
               lcd.print(String(savedParameters.numCycles));
             }
-            else {
+            else {                            // Motor running, start rotate
               lcd.setCursor(0,0);
               lcd.print(OPTION2C_11);
               lcd.print(String(savedParameters.cycleTime));

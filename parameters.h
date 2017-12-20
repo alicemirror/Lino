@@ -42,7 +42,7 @@ struct options {
   int appStatus;          ///< Status of the application
 };
 
-#define EEPROM_ADDRESS 0  ///< EEPROM address to write the configuration variables
+#define EEPROM_ADDRESS 0X00  ///< EEPROM address to read/write the configuration variables
 /**
  * Configuration parameters, saved as single object to the EEPROM
  */
