@@ -11,15 +11,19 @@
 
 #include <EEPROM.h>
 #include <Streaming.h>
+#include <Stepper.h>
 #include "settings.h"
 #include "displaystrings.h"
 #include "parameters.h"
 
 // Undef to remove serial debug
-#undef _DEBUG
+#define _DEBUG
 
 // initialize the library by associating any needed LCD interface pin
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
+
+// Create the stepper library instance
+Stepper motor = Stepper(STEPS, STEP, DIR);
 
 options sysStatus;
 configObject savedParameters;
@@ -67,12 +71,19 @@ void setup() {
   attachInterrupt(IRQ_LEFT_LIMITER, switchLeft, CHANGE);
   attachInterrupt(IRQ_RIGHT_LIMITER, switchRight, CHANGE);
   attachInterrupt(IRQ_EMERGENCY_BUTTON, emergency, CHANGE);
+
+  // Test stepper
+  motor.setSpeed(10); // set 60 rpm
 }
 
 /**
  * Main loop
  */
 void loop(){
+
+    motor.step(STEPS * 4 * -1);
+    delay(500);
+
 
   // Check if the option status has changed and update the display
   if(sysStatus.optionChanged) {

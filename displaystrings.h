@@ -20,7 +20,7 @@
 #ifdef ITALIAN
 
 #define START1 "BalearicDynamics"
-#define START2 "Lino 1.0.9 IT"
+#define START2 "Lino 1.0.10 IT"
 
 // Confirm-cancel option
 #define OPTION_OK_NO "   OK   Annulla"

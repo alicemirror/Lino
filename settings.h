@@ -41,12 +41,20 @@
 // *********************
 // Display pin settings
 // *********************
-#define LCD_RS 8  ///< LCD rs signal
-#define LCD_EN 9  ///< LCD en (enable)
-#define LCD_D4 4  ///< Data bit
-#define LCD_D5 5  ///< Data bit
-#define LCD_D6 6  ///< Data bit
-#define LCD_D7 7  ///< Data bit
+#define LCD_RS 26  ///< LCD rs signal
+#define LCD_EN 27  ///< LCD en (enable)
+#define LCD_D4 28  ///< Data bit
+#define LCD_D5 29  ///< Data bit
+#define LCD_D6 30  ///< Data bit
+#define LCD_D7 31  ///< Data bit
+
+// *********************
+// Stepper motor pins
+// *********************
+#define STEPS 200   // Steps per rotation
+#define STEP 4
+#define DIR 5
+#define ENABLE 6
 
 #define LCD_ROWS 2    ///< LCD number of rows
 #define LCD_COL 16    ///< LCD number of columns
