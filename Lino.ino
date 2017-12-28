@@ -42,6 +42,7 @@ void setup() {
   pinMode(LEFT_LED, OUTPUT);
   pinMode(RIGHT_LED, OUTPUT);
   pinMode(EMERGENCY_LED, OUTPUT);
+  pinMode(ENABLE, OUTPUT);
 
   pinMode(LEFT_LIMITER, INPUT);
   pinMode(LEFT_LIMITER, INPUT);
@@ -72,18 +73,16 @@ void setup() {
   attachInterrupt(IRQ_RIGHT_LIMITER, switchRight, CHANGE);
   attachInterrupt(IRQ_EMERGENCY_BUTTON, emergency, CHANGE);
 
-  // Test stepper
-  motor.setSpeed(10); // set 60 rpm
+  // Set stepper
+  motor.setSpeed(50); // set base speed in RPM
+  // Motor disabled
+  digitalWrite(ENABLE, LOW);
 }
 
 /**
  * Main loop
  */
 void loop(){
-
-    motor.step(STEPS * 4 * -1);
-    delay(500);
-
 
   // Check if the option status has changed and update the display
   if(sysStatus.optionChanged) {
@@ -235,8 +234,20 @@ void loop(){
    */
   int checkCommandButtons() {
     if(digitalRead(ACTION_BUTTON_1) == false){
+#ifdef _DEBUG
+    // Enable motor -> Test stepper -> Disable motor
+    digitalWrite(ENABLE, HIGH);
+    motor.step(500);
+    digitalWrite(ENABLE, LOW);
+#endif
       return COMMAND_LEFT;
     } else if(digitalRead(ACTION_BUTTON_2) == false) {
+#ifdef _DEBUG
+    // Enable motor -> Test stepper -> Disable motor
+    digitalWrite(ENABLE, HIGH);
+    motor.step(-500);
+    digitalWrite(ENABLE, LOW);
+#endif
       return COMMAND_RIGHT;
     } else {
       return COMMAND_NOCOMMAND;

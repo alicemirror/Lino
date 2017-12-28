@@ -12,6 +12,8 @@
 #ifndef _SETTING
 #define _SETTING
 
+#define _PROTOTYPE
+
 #include "LiquidCrystal.h"
 
 // *********************
@@ -35,8 +37,13 @@
 #define EMERGENCY_BUTTON 19     ///< Emergency button. Stop immediately every activity (interrupt controlled)
 #define IRQ_EMERGENCY_BUTTON 4  ///< Options setting button interrupt number
 
+#ifdef _PROTOTYPE
+#define ACTION_BUTTON_1 22    ///< Action button 1
+#define ACTION_BUTTON_2 23    ///< Action button 2
+#else
 #define ACTION_BUTTON_1 23    ///< Action button 1
 #define ACTION_BUTTON_2 22    ///< Action button 2
+#endif
 
 // *********************
 // Display pin settings
@@ -44,10 +51,15 @@
 #define LCD_RS 26  ///< LCD rs signal
 #define LCD_EN 27  ///< LCD en (enable)
 #define LCD_D4 28  ///< Data bit
+#ifdef _PROTOTYPE
+#define LCD_D5 31  ///< Data bit
+#define LCD_D6 30  ///< Data bit
+#define LCD_D7 33  ///< Data bit
+#else
 #define LCD_D5 29  ///< Data bit
 #define LCD_D6 30  ///< Data bit
 #define LCD_D7 31  ///< Data bit
-
+#endif
 // *********************
 // Stepper motor pins
 // *********************
