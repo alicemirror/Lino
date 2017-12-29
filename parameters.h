@@ -45,11 +45,13 @@ struct options {
   volatile int optionsLevel;       ///< Current option level
   volatile boolean optionChanged;  ///< The option button has been pressed and should be processed
   boolean motorOn;        ///< Motor running status
-  boolean isRotating;     ///< Moor rotation status
+  boolean isRotating;     ///< Motor rotation status
+  volatile int motorDir;           ///< Current motor direction of rotation
   volatile boolean emergency;      ///< Emergency status
   volatile boolean rightLimit;     ///< Detected the right endstop switch
   volatile boolean leftLimit;      ///< Detected the left endstop switch
   int appStatus;          ///< Status of the application
+  int numSteps;           ///< Max number of steps between limiters
 };
 
 #define EEPROM_ADDRESS 0X00  ///< EEPROM address to read/write the configuration variables

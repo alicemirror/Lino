@@ -20,7 +20,7 @@
 #ifdef ITALIAN
 
 #define START1 "BalearicDynamics"
-#define START2 "Lino 1.0.11 IT"
+#define START2 "Lino 1.0.12 IT"
 
 // Confirm-cancel option
 #define OPTION_OK_NO "   OK   Annulla"
@@ -32,15 +32,19 @@
 // ******************************************* Option 1 - Start activity
 // --- Option1 level 1
 #define OPTION1 "Inizio attivita'"
-#define OPTION1AB "  Reset   Zero"
+#define OPTION1AB "  Reset   Calib."
 
 // --- Option1.A level 2
 #define OPTION1A_11 "Reset parametri"
 #define OPTION1A_12 "Completato"
 
 // --- Option1.B level 2
-#define OPTION1B_11 "Auto-zero"
-#define OPTION1B_12 "Completato"
+#define OPTION1B_11 "Calib. in corso"
+#define OPTION1B_12 "Attendere..."
+
+// --- Option1.C level 2
+#define OPTION1C_11 "Calibrazione"
+#define OPTION1C_12 "Completata"
 
 // ******************************************* Option 1 - Execute action
 // --- Option2 level 1

@@ -19,18 +19,23 @@
 // *********************
 // Pin definitions
 // *********************
-#define LEFT_LED 10           ///< Left limiter switch signal
-#define RIGHT_LED 11          ///< Right limniter switch signal
+#define LEFT_LED 11           ///< Left limiter switch signal
+#define RIGHT_LED 10          ///< Right limniter switch signal
 #define EMERGENCY_LED 24      ///< Emergency LED signaling the status together with the display
 
 #define ANALOG_SETTING A0      ///< Analog input potentiometer for parameters setting
 
+#ifdef _PROTOTYPE
+#define LEFT_LIMITER 3        ///< Left limiter switch (interrupt controlled)
+#define IRQ_LEFT_LIMITER 1    ///< Left limiter switch interrupt number
+#define RIGHT_LIMITER 2       ///< Right limiter switch (interrupt controlled)
+#define IRQ_RIGHT_LIMITER 0   ///< Right limiter switch interrupt number
+#else
 #define LEFT_LIMITER 2        ///< Left limiter switch (interrupt controlled)
 #define IRQ_LEFT_LIMITER 0    ///< Left limiter switch interrupt number
-
 #define RIGHT_LIMITER 3       ///< Right limiter switch (interrupt controlled)
 #define IRQ_RIGHT_LIMITER 1   ///< Right limiter switch interrupt number
-
+#endif
 #define SETTING_BUTTON 18     ///< Options setting button (interrutp controlled)
 #define IRQ_SETTING_BUTTON 5  ///< Options setting button interrupt number
 
@@ -63,10 +68,53 @@
 // *********************
 // Stepper motor pins
 // *********************
-#define STEPS 200   // Steps per rotation
 #define STEP 4
 #define DIR 5
 #define ENABLE 6
+
+// *********************
+// Stepper motor defaults
+// *********************
+
+//! Steps per rotation
+#define STEPS 200   
+//! Drive gear teeths
+#define DRIVE_GEAR 42
+//! Driven gear teeths
+#define DRIVEN_GEAR 75
+//! Gear ratio calculation
+#define GEAR_RATIO DRIVEN_GEAR/DRIVE_GEAR
+//! Direction right
+#define MOVE_RIGHT -1
+//! Direction right
+#define MOVE_LEFT 1
+
+//! Number of stepd back while searching the limits
+#define STEP_BACK 100
+
+//! Angle every step on drive gear
+#define STEPPER_ANGLE 1.8
+//! Angle every step on driven gear
+//#define STEP_ANGLE_REAL STEPPER_ANGLE/GEAR_RATIO
+
+//! Microstepper setting (in the format 1/Microsteps)
+#define STEPPER_MICROSTEPS 0.25
+
+/** 
+ *  Number of steps in 90 DEG wmpirically calculated with
+ *  the controller microstepping switches set to 1/4
+ */
+#define STEPS_90DEG 1600
+
+//! Fast speed in RPM, used to move the gear when searching
+//! for the limiters
+#define HIGH_SPEED 100
+//! Slow speed in RPM, used to move the gear for limits fine tuning
+#define LOW_SPEED 25
+
+// *********************
+// General parameters
+// *********************
 
 #define LCD_ROWS 2    ///< LCD number of rows
 #define LCD_COL 16    ///< LCD number of columns

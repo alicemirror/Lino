@@ -74,7 +74,7 @@ void setup() {
   attachInterrupt(IRQ_EMERGENCY_BUTTON, emergency, CHANGE);
 
   // Set stepper
-  motor.setSpeed(50); // set base speed in RPM
+  motor.setSpeed(100); // set base speed in RPM
   // Motor disabled
   digitalWrite(ENABLE, LOW);
 }
@@ -101,6 +101,95 @@ void loop(){
       doCommand(checkCommandButtons());
     }
   } // loop
+
+  // ******************************************************
+  // Stepper functions
+  // ******************************************************
+  /**
+   * CaLCulate the number of steps between the two limiters
+   */
+  void countSteps() {
+    int stepCount;
+    int j;
+    // First step: rotates to right until the limiter is on
+    // at high speed
+    motor.setSpeed(HIGH_SPEED);
+    // Enable the motor
+    digitalWrite(ENABLE, HIGH);
+    sysStatus.motorOn = true;
+    // Start motion
+    sysStatus.motorDir = MOVE_RIGHT;
+    // Loop until the limiter switch is activated by interrupt
+    // and disble the motor
+    while(sysStatus.rightLimit == false) {
+      if(sysStatus.emergency == false) {
+        motor.step(sysStatus.motorDir); // One step at a time
+      }
+      else {
+        // Emergency, stop all activity
+        digitalWrite(ENABLE, HIGH);
+        sysStatus.motorOn = false;
+        sysStatus.isRotating = false;
+        return;
+      }
+    }
+    // Step back 10 steps then move slow to finde exactly the right
+    // limit position
+    for(j = 0; j < STEP_BACK; j++) {
+      motor.step(MOVE_LEFT); // One step at a time
+    }
+    motor.setSpeed(LOW_SPEED);
+    sysStatus.rightLimit = false; // reset the limiter flag
+    while(sysStatus.rightLimit == false) {
+      if(sysStatus.emergency == false) {
+        motor.step(sysStatus.motorDir); // One step at a time, slow motion
+      }
+      else {
+        // Emergency, stop all activity
+        digitalWrite(ENABLE, HIGH);
+        sysStatus.motorOn = false;
+        sysStatus.isRotating = false;
+        return;
+      }
+    }
+    // Start counting the steps inverting the direction, 
+    // until the opposite limiter is not met
+    stepCount = 0;
+    sysStatus.motorDir = MOVE_LEFT;
+    while(sysStatus.leftLimit == false) {
+      if(sysStatus.emergency == false) {
+        motor.step(sysStatus.motorDir); // One step at a time
+        stepCount++;
+      }
+      else {
+        // Emergency, stop all activity
+        digitalWrite(ENABLE, HIGH);
+        sysStatus.motorOn = false;
+        sysStatus.isRotating = false;
+        return;
+      }
+    }
+    // Disable the motor
+    digitalWrite(ENABLE, LOW);
+    sysStatus.leftLimit = false; // reset the limiter flag
+    sysStatus.numSteps;
+#ifdef _DEBUG
+      _debugSerial("*** countSteps() - Number of steps = ");
+      _debugSerial(String(stepCount));
+      _debugSerialEndl();
+#endif
+  }
+
+  /**
+   * Dinamically calculate the RPM speed settings for 
+   * the movement. The formula calculates the RPM speed
+   * based on 1 minute per sequence duration. 
+   * Then the 1 minute value is multipled by the cycle duration
+   * stored in the EEPROM settings.
+   */
+   void calcSpeed() {
+    
+   }
 
   // ******************************************************
   // EEPROM functions
@@ -152,7 +241,6 @@ void loop(){
    */
   void lcdShowOption() {
     lcd.display();
-
     switch(sysStatus.optionsLevel) {
       case LCD_OPTION1:
         lcd.setCursor(0,0);
@@ -186,11 +274,6 @@ void loop(){
         lcd.print(OPTIONX);
         lcd.setCursor(0,1);
         lcd.print(OPTIONXAB);
-#ifdef _DEBUG
-      // Test the EEPROM read/write
-      _debugSerial("*** Opton button interrupt callback");
-      _debugSerialEndl();
-#endif
         break;
     }
   }
@@ -219,12 +302,6 @@ void loop(){
       if(sysStatus.optionsLevel >= MAXOPTIONS){
         sysStatus.optionsLevel = LCD_OPTION1;
       } // cycle options
-#ifdef _DEBUG
-      _debugSerial("*** Opton button interrupt callback");
-      _debugSerial(" - New option number:");
-      _debugSerial(String(sysStatus.optionsLevel));
-      _debugSerialEndl();
-#endif
     } // Motor not running, options cycle
   }
 
@@ -234,20 +311,8 @@ void loop(){
    */
   int checkCommandButtons() {
     if(digitalRead(ACTION_BUTTON_1) == false){
-#ifdef _DEBUG
-    // Enable motor -> Test stepper -> Disable motor
-    digitalWrite(ENABLE, HIGH);
-    motor.step(500);
-    digitalWrite(ENABLE, LOW);
-#endif
       return COMMAND_LEFT;
     } else if(digitalRead(ACTION_BUTTON_2) == false) {
-#ifdef _DEBUG
-    // Enable motor -> Test stepper -> Disable motor
-    digitalWrite(ENABLE, HIGH);
-    motor.step(-500);
-    digitalWrite(ENABLE, LOW);
-#endif
       return COMMAND_RIGHT;
     } else {
       return COMMAND_NOCOMMAND;
@@ -274,6 +339,13 @@ void loop(){
             lcd.print(OPTION1B_11);
             lcd.setCursor(0,1);
             lcd.print(OPTION1B_12);
+            // Calculate the number of steps and save it on the global structure
+            countSteps();
+            lcd.clear();
+            lcd.setCursor(0,0);
+            lcd.print(OPTION1C_11);
+            lcd.setCursor(0,1);
+            lcd.print(OPTION1C_12);
           }
           break;
         case LCD_OPTION2:
@@ -380,29 +452,6 @@ void loop(){
       sysStatus.optionChanged = true; // Set the option status changed
     }
     attachInterrupt(IRQ_EMERGENCY_BUTTON, emergency, CHANGE);
-#ifdef _DEBUG
-    // Test EEPROM
-    _debugSerial("*** EEPROM Test, saving default values");
-    _debugSerialEndl();
-    resetConfiguration();
-
-    _debugSerial("*** Default saved, configuration object set to zero ");
-    savedParameters.cycleTime = 0;
-    savedParameters.numCycles = 0;
-    _debugSerial("*** cycleTime = ");
-    _debugSerial(String(savedParameters.cycleTime));
-    _debugSerial(", numCycles = ");
-    _debugSerial(String(savedParameters.numCycles));
-    _debugSerialEndl();
-
-    _debugSerial("*** Load configuration from EEPROM");
-    loadConfiguration();
-    _debugSerial("*** cycleTime = ");
-    _debugSerial(String(savedParameters.cycleTime));
-    _debugSerial(", numCycles = ");
-    _debugSerial(String(savedParameters.numCycles));
-    _debugSerialEndl();
-#endif
   }
 
   // ******************************************************
