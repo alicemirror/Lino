@@ -90,21 +90,15 @@
 #define MOVE_LEFT 1
 
 //! Number of stepd back while searching the limits
-#define STEP_BACK 40
-
-//! Angle every step on drive gear
-#define STEPPER_ANGLE 1.8
-//! Angle every step on driven gear
-//#define STEP_ANGLE_REAL STEPPER_ANGLE/GEAR_RATIO
-
-//! Microstepper setting (in the format 1/Microsteps)
-#define STEPPER_MICROSTEPS 0.25
+#define STEP_BACK 80
 
 //! Fast speed in RPM, used to move the gear when searching
 //! for the limiters
 #define HIGH_SPEED 200
 //! Slow speed in RPM, used to move the gear for limits fine tuning
-#define LOW_SPEED 10
+#define LOW_SPEED 100
+//! 1 minut in ms
+#define ONE_MINUTE 60000
 
 // *********************
 // General parameters

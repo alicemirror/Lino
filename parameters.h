@@ -52,7 +52,7 @@ struct options {
   volatile boolean leftLimit;      ///< Detected the left endstop switch
   int appStatus;          ///< Status of the application
   int numSteps;           ///< Max number of steps between limiters
-  float cycleDuration;    ///< Millisec duration of a cycle loop at the default fixed RPM speed
+  int baseSpeed;          ///< Motor RPM for 1 minute cycle
 };
 
 #define EEPROM_ADDRESS 0X00  ///< EEPROM address to read/write the configuration variables

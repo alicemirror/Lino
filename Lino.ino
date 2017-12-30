@@ -17,7 +17,7 @@
 #include "parameters.h"
 
 // Undef to remove serial debug
-#undef _DEBUG
+#define _DEBUG
 
 // initialize the library by associating any needed LCD interface pin
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
@@ -110,6 +110,7 @@ void loop(){
   void countSteps() {
     int stepCount;
     int j;
+    float startMillis, endMillis, elapsedMillis;
     // First step: rotates to right until the limiter is on
     // at high speed
     motor.setSpeed(HIGH_SPEED);
@@ -152,9 +153,11 @@ void loop(){
       }
     }
     // Start counting the steps inverting the direction, 
-    // until the opposite limiter is not met
+    // until the opposite limiter is not met and the time needed 
+    // on the base od the LOW_SPEED motor RPM
     stepCount = 0;
     sysStatus.motorDir = MOVE_LEFT;
+    startMillis = millis();
     while(sysStatus.leftLimit == false) {
       if(sysStatus.emergency == false) {
         motor.step(sysStatus.motorDir); // One step at a time
@@ -168,16 +171,33 @@ void loop(){
         return;
       }
     }
+    endMillis = millis();
+    // Update the number of steps
+    sysStatus.numSteps = stepCount;
+    // Calculate the duration in ms
+    elapsedMillis = endMillis - startMillis;
+    // Calculate the motor RPM speed to cover the entire path in 1 minute (60k ms)
+    sysStatus.baseSpeed = LOW_SPEED / (ONE_MINUTE / elapsedMillis);
+#ifdef _DEBUG
+      _debugSerial("*** countSteps() - Elapsed millis = ");
+      _debugSerial(String(elapsedMillis));
+      _debugSerialEndl();
+      _debugSerial("*** countSteps() - Number of steps = ");
+      _debugSerial(String(sysStatus.numSteps));
+      _debugSerialEndl();
+      _debugSerial("*** countSteps() - 1 minute base speed (RPM) = ");
+      _debugSerial(String(sysStatus.baseSpeed));
+      _debugSerialEndl();
+#endif
+    
     // Step back steps to go out of the limiter switch
     // limit position
     for(j = 0; j < STEP_BACK; j++) {
       motor.step(MOVE_RIGHT);
     }
-    // Update the number of steps
-    sysStatus.numSteps = stepCount;
     // Move to right zero and left zero (for testing) at high speed
     motor.setSpeed(HIGH_SPEED);
-    for(j = 0; j < (sysStatus.numSteps +(STEP_BACK * 2)); j++) {
+    for(j = 0; j < (sysStatus.numSteps -(STEP_BACK * 2)); j++) {
       if(sysStatus.emergency == false) {
         motor.step(MOVE_RIGHT);
       }
@@ -189,7 +209,7 @@ void loop(){
         return;
       }
     }
-    for(j = 0; j < (sysStatus.numSteps +(STEP_BACK * 2)); j++) {
+    for(j = 0; j < (sysStatus.numSteps -(STEP_BACK * 2)); j++) {
       if(sysStatus.emergency == false) {
         motor.step(MOVE_LEFT);
       }
@@ -205,11 +225,6 @@ void loop(){
     digitalWrite(ENABLE, LOW);
     sysStatus.motorOn = false;
     sysStatus.isRotating = false;
-#ifdef _DEBUG
-      _debugSerial("*** countSteps() - Number of steps = ");
-      _debugSerial(String(stepCount));
-      _debugSerialEndl();
-#endif
   }
 
   /**
