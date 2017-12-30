@@ -90,7 +90,7 @@
 #define MOVE_LEFT 1
 
 //! Number of stepd back while searching the limits
-#define STEP_BACK 80
+#define STEP_BACK 160
 
 //! Fast speed in RPM, used to move the gear when searching
 //! for the limiters
