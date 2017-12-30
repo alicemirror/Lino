@@ -50,6 +50,7 @@ struct options {
   volatile boolean emergency;      ///< Emergency status
   volatile boolean rightLimit;     ///< Detected the right endstop switch
   volatile boolean leftLimit;      ///< Detected the left endstop switch
+  boolean calibration;             ///< Flag set after the zero point has be found
   int appStatus;          ///< Status of the application
   int numSteps;           ///< Max number of steps between limiters
   int baseSpeed;          ///< Motor RPM for 1 minute cycle

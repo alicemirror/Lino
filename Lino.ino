@@ -17,7 +17,7 @@
 #include "parameters.h"
 
 // Undef to remove serial debug
-#define _DEBUG
+#undef _DEBUG
 
 // initialize the library by associating any needed LCD interface pin
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
@@ -77,6 +77,10 @@ void setup() {
   motor.setSpeed(100); // set base speed in RPM
   // Motor disabled
   digitalWrite(ENABLE, LOW);
+
+  // Initialize the path and position
+  sysStatus.calibration = false;
+  countSteps();
 }
 
 /**
@@ -130,6 +134,7 @@ void loop(){
         digitalWrite(ENABLE, HIGH);
         sysStatus.motorOn = false;
         sysStatus.isRotating = false;
+        sysStatus.calibration = false;
         return;
       }
     }
@@ -149,6 +154,7 @@ void loop(){
         digitalWrite(ENABLE, LOW);
         sysStatus.motorOn = false;
         sysStatus.isRotating = false;
+        sysStatus.calibration = false;
         return;
       }
     }
@@ -168,6 +174,7 @@ void loop(){
         digitalWrite(ENABLE, LOW);
         sysStatus.motorOn = false;
         sysStatus.isRotating = false;
+        sysStatus.calibration = false;
         return;
       }
     }
@@ -206,6 +213,7 @@ void loop(){
         digitalWrite(ENABLE, LOW);
         sysStatus.motorOn = false;
         sysStatus.isRotating = false;
+        sysStatus.calibration = false;
         return;
       }
     }
@@ -218,6 +226,7 @@ void loop(){
         digitalWrite(ENABLE, LOW);
         sysStatus.motorOn = false;
         sysStatus.isRotating = false;
+        sysStatus.calibration = false;
         return;
       }
     }
@@ -225,18 +234,55 @@ void loop(){
     digitalWrite(ENABLE, LOW);
     sysStatus.motorOn = false;
     sysStatus.isRotating = false;
+    // Set the next valid direction
+    sysStatus.motorDir = MOVE_RIGHT;
+    sysStatus.calibration = true;
   }
 
   /**
-   * Dinamically calculate the RPM speed settings for 
-   * the movement. The formula calculates the RPM speed
-   * based on 1 minute per sequence duration. 
-   * Then the 1 minute value is multipled by the cycle duration
-   * stored in the EEPROM settings.
+   * Run a full path to the current direction for the
+   * selected duration (minutes)
    */
-   void calcSpeed() {
-    
+   void rotatePath() {
+    int j;
+
+    // Check if motor is enabled
+    if(sysStatus.motorOn == false)
+      return;
+    // Check for calibration
+    if(sysStatus.calibration == false)
+      return;
+      
+    // Set the RPM motor speed
+    motor.setSpeed((int)(sysStatus.baseSpeed/savedParameters.cycleTime));
+    // Set rotation flag
+    sysStatus.isRotating = true;
+    // Motion loop along the entire path
+    for(j = 0; j < (sysStatus.numSteps -(STEP_BACK * 2)); j++) {
+      if(sysStatus.emergency == false) {
+        motor.step(sysStatus.motorDir);
+      }
+      else {
+        // Emergency, stop all activity
+        digitalWrite(ENABLE, LOW);
+        sysStatus.motorOn = false;
+        sysStatus.isRotating = false;
+        sysStatus.calibration = false;
+        return;
+      }
+    } // Motion loop
+    // Disable rotation status
+    sysStatus.isRotating = false;
+    // Update the drirection
+    invertDirection();
    }
+
+  void invertDirection(){
+    if(sysStatus.motorDir == MOVE_RIGHT)
+      sysStatus.motorDir = MOVE_LEFT;
+    else
+      sysStatus.motorDir = MOVE_RIGHT;
+  }
 
   // ******************************************************
   // EEPROM functions
@@ -400,7 +446,7 @@ void loop(){
             lcd.print(OPTION1C_12);
           }
           break;
-        case LCD_OPTION2:
+        case LCD_OPTION2:               // Start, rotation
           if(side == COMMAND_LEFT) {
             if(sysStatus.motorOn == false) {  // Motor stopped, show info
               lcd.setCursor(0,0);
@@ -417,7 +463,9 @@ void loop(){
               lcd.setCursor(0,1);
               lcd.print(OPTION2C_12);
               lcd.print(String(savedParameters.numCycles));
-              sysStatus.isRotating = true;
+              digitalWrite(ENABLE, HIGH);
+              rotatePath();
+              digitalWrite(ENABLE, LOW);
             }
           }
           else if(side == COMMAND_RIGHT) {
