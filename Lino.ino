@@ -17,7 +17,7 @@
 #include "parameters.h"
 
 // Undef to remove serial debug
-#define _DEBUG
+#undef _DEBUG
 
 // initialize the library by associating any needed LCD interface pin
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
@@ -91,11 +91,10 @@ void loop(){
     lcdShowOption();
     }
 
-    // If we are in emergency status, the setting button is nore reset until
+    // If we are in emergency status, the setting button is not reset until
     // the emergency status is disabled
     if(sysStatus.emergency == false) {
-      delay(500);
-      attachInterrupt(IRQ_SETTING_BUTTON, switchOption, LOW); // re-enable the interrupts
+      delay(250);
       // Check for command buttons. Command buttons can't be executed
       // when the system is in emergency state
       doCommand(checkCommandButtons());
@@ -120,7 +119,7 @@ void loop(){
     // Start motion
     sysStatus.motorDir = MOVE_RIGHT;
     // Loop until the limiter switch is activated by interrupt
-    // and disble the motor
+    // and disble the motor 
     while(sysStatus.rightLimit == false) {
       if(sysStatus.emergency == false) {
         motor.step(sysStatus.motorDir); // One step at a time
@@ -133,7 +132,7 @@ void loop(){
         return;
       }
     }
-    // Step back 10 steps then move slow to finde exactly the right
+    // Step back steps then move slow to finde exactly the right
     // limit position
     for(j = 0; j < STEP_BACK; j++) {
       motor.step(MOVE_LEFT); // One step at a time
@@ -146,7 +145,7 @@ void loop(){
       }
       else {
         // Emergency, stop all activity
-        digitalWrite(ENABLE, HIGH);
+        digitalWrite(ENABLE, LOW);
         sysStatus.motorOn = false;
         sysStatus.isRotating = false;
         return;
@@ -163,7 +162,40 @@ void loop(){
       }
       else {
         // Emergency, stop all activity
-        digitalWrite(ENABLE, HIGH);
+        digitalWrite(ENABLE, LOW);
+        sysStatus.motorOn = false;
+        sysStatus.isRotating = false;
+        return;
+      }
+    }
+    // Step back steps to go out of the limiter switch
+    // limit position
+    for(j = 0; j < STEP_BACK; j++) {
+      motor.step(MOVE_RIGHT);
+    }
+    // Update the number of steps
+    sysStatus.numSteps = stepCount;
+    // Move to right zero and left zero (for testing) at high speed
+    motor.setSpeed(HIGH_SPEED);
+    for(j = 0; j < (sysStatus.numSteps +(STEP_BACK * 2)); j++) {
+      if(sysStatus.emergency == false) {
+        motor.step(MOVE_RIGHT);
+      }
+      else {
+        // Emergency, stop all activity
+        digitalWrite(ENABLE, LOW);
+        sysStatus.motorOn = false;
+        sysStatus.isRotating = false;
+        return;
+      }
+    }
+    for(j = 0; j < (sysStatus.numSteps +(STEP_BACK * 2)); j++) {
+      if(sysStatus.emergency == false) {
+        motor.step(MOVE_LEFT);
+      }
+      else {
+        // Emergency, stop all activity
+        digitalWrite(ENABLE, LOW);
         sysStatus.motorOn = false;
         sysStatus.isRotating = false;
         return;
@@ -171,8 +203,8 @@ void loop(){
     }
     // Disable the motor
     digitalWrite(ENABLE, LOW);
-    sysStatus.leftLimit = false; // reset the limiter flag
-    sysStatus.numSteps;
+    sysStatus.motorOn = false;
+    sysStatus.isRotating = false;
 #ifdef _DEBUG
       _debugSerial("*** countSteps() - Number of steps = ");
       _debugSerial(String(stepCount));
@@ -295,6 +327,10 @@ void loop(){
   void switchOption(){
     if( (sysStatus.motorOn == false) || (sysStatus.emergency) ) {
       detachInterrupt(IRQ_SETTING_BUTTON);
+#ifdef _DEBUG
+      _debugSerial("*** Options button IRQ");
+      _debugSerialEndl();
+#endif
       sysStatus.optionChanged = true;
       sysStatus.optionsLevel++;
       // Check for max number of options reached
@@ -302,6 +338,7 @@ void loop(){
       if(sysStatus.optionsLevel >= MAXOPTIONS){
         sysStatus.optionsLevel = LCD_OPTION1;
       } // cycle options
+      attachInterrupt(IRQ_SETTING_BUTTON, switchOption, LOW); // re-enable the interrupts
     } // Motor not running, options cycle
   }
 

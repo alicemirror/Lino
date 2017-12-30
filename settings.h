@@ -90,7 +90,7 @@
 #define MOVE_LEFT 1
 
 //! Number of stepd back while searching the limits
-#define STEP_BACK 100
+#define STEP_BACK 40
 
 //! Angle every step on drive gear
 #define STEPPER_ANGLE 1.8
@@ -100,17 +100,11 @@
 //! Microstepper setting (in the format 1/Microsteps)
 #define STEPPER_MICROSTEPS 0.25
 
-/** 
- *  Number of steps in 90 DEG wmpirically calculated with
- *  the controller microstepping switches set to 1/4
- */
-#define STEPS_90DEG 1600
-
 //! Fast speed in RPM, used to move the gear when searching
 //! for the limiters
-#define HIGH_SPEED 100
+#define HIGH_SPEED 200
 //! Slow speed in RPM, used to move the gear for limits fine tuning
-#define LOW_SPEED 25
+#define LOW_SPEED 10
 
 // *********************
 // General parameters

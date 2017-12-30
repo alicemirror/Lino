@@ -28,9 +28,9 @@
 #define COMMAND_LEFT 1        ///< Left command button ID
 #define COMMAND_RIGHT 2       ///< Right command button ID
 
-#define MIN_TIME 0            ///< Minimum one-cycle duration (minutes)
+#define MIN_TIME 1            ///< Minimum one-cycle duration (minutes)
 #define MAX_TIME 6            ///< Maximum one-cycle duration (minutes)
-#define MIN_CYCLES 0          ///< Minimum number of cycles
+#define MIN_CYCLES 1          ///< Minimum number of cycles
 #define MAX_CYCLES 51         ///< Maximum number of cycles
 #define MIN_ANALOG 0          ///< Minimum analog reading
 #define MAX_ANALOG 1023       ///< Maximum analog reading (depends on the analog resolution)
@@ -52,6 +52,7 @@ struct options {
   volatile boolean leftLimit;      ///< Detected the left endstop switch
   int appStatus;          ///< Status of the application
   int numSteps;           ///< Max number of steps between limiters
+  float cycleDuration;    ///< Millisec duration of a cycle loop at the default fixed RPM speed
 };
 
 #define EEPROM_ADDRESS 0X00  ///< EEPROM address to read/write the configuration variables
