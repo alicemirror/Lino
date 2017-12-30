@@ -98,7 +98,6 @@ void loop(){
     // If we are in emergency status, the setting button is not reset until
     // the emergency status is disabled
     if(sysStatus.emergency == false) {
-      delay(250);
       // Check for command buttons. Command buttons can't be executed
       // when the system is in emergency state
       doCommand(checkCommandButtons());
@@ -399,6 +398,7 @@ void loop(){
       if(sysStatus.optionsLevel >= MAXOPTIONS){
         sysStatus.optionsLevel = LCD_OPTION1;
       } // cycle options
+      delay(500);
       attachInterrupt(IRQ_SETTING_BUTTON, switchOption, LOW); // re-enable the interrupts
     } // Motor not running, options cycle
   }
@@ -421,6 +421,8 @@ void loop(){
    * Execute the command button depending on the state of the system.
    */
   void doCommand(int side) {
+    int j;
+
     if(side != COMMAND_NOCOMMAND) {
       lcd.clear();
       switch(sysStatus.optionsLevel) {
@@ -445,6 +447,7 @@ void loop(){
             lcd.setCursor(0,1);
             lcd.print(OPTION1C_12);
           }
+          delay(COMMAND_DELAY); // Show the message then continue
           break;
         case LCD_OPTION2:               // Start, rotation
           if(side == COMMAND_LEFT) {
@@ -455,16 +458,23 @@ void loop(){
               lcd.setCursor(0,1);
               lcd.print(OPTION2A_12);
               lcd.print(String(savedParameters.numCycles));
+              delay(COMMAND_DELAY); // Show the message then continue
             }
             else {                            // Motor running, start rotate
               lcd.setCursor(0,0);
-              lcd.print(OPTION2C_11);
+              lcd.print(OPTION2C_10);
               lcd.print(String(savedParameters.cycleTime));
-              lcd.setCursor(0,1);
-              lcd.print(OPTION2C_12);
-              lcd.print(String(savedParameters.numCycles));
+              lcd.print(OPTION2C_11);
               digitalWrite(ENABLE, HIGH);
-              rotatePath();
+              // Loop over the number of cycles
+              for(j = 0; j < savedParameters.numCycles; j++){
+                lcd.setCursor(0,1);
+                lcd.print(OPTION2C_12);
+                lcd.print(String(j + 1));
+                lcd.print(OPTION2C_13);
+                lcd.print(String(savedParameters.numCycles));
+                rotatePath();
+              }
               digitalWrite(ENABLE, LOW);
             }
           }
@@ -506,6 +516,7 @@ void loop(){
             lcd.setCursor(0,1);
             lcd.print(OPTION3D_12);
           }
+          delay(COMMAND_DELAY); // Show the message then continue
           break;
         case LCD_OPTION4:
           if(side == COMMAND_LEFT) {
@@ -521,9 +532,9 @@ void loop(){
             lcd.setCursor(0,1);
             lcd.print(OPTION4B_12);
           }
+          delay(COMMAND_DELAY); // Show the message then continue
           break;
       } // command processing
-      delay(COMMAND_DELAY); // Show the message then continue
       lcd.clear();
       lcdShowOption();
     } // process command side (not 0)
@@ -537,7 +548,7 @@ void loop(){
     if(digitalRead(EMERGENCY_BUTTON)){
       // If the emergency status off comes from an emergency recovery
       // condition, the button IRQ, status and option should be reset
-      if(sysStatus.emergency = true) {
+      if(sysStatus.emergency == true) {
         sysStatus.optionsLevel = LCD_OPTION1; // First option on the display
         sysStatus.optionChanged = true; // Set the option status changed
       }
@@ -562,6 +573,7 @@ void loop(){
    */
    void analogSet() {
     int analog;
+    char value[4];
 
     // Wait few ms to avoid that the previous button is read again by
     // the function
@@ -577,7 +589,8 @@ void loop(){
         lcd.print(String(savedParameters.cycleTime));
       } else if(sysStatus.appStatus == APP_SET_CYCLES) {
         savedParameters.numCycles = map(analog, MIN_ANALOG, MAX_ANALOG, MIN_CYCLES, MAX_CYCLES);
-        lcd.print(String(savedParameters.numCycles));
+        sprintf(value, "%2d", savedParameters.numCycles);
+        lcd.print(value);
       }
     }
    }

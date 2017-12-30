@@ -20,7 +20,7 @@
 #ifdef ITALIAN
 
 #define START1 "BalearicDynamics"
-#define START2 "Lino 1.0.15 IT"
+#define START2 "Lino 1.0.16 IT"
 
 // Confirm-cancel option
 #define OPTION_OK_NO "   OK   Annulla"
@@ -63,8 +63,10 @@
 #define OPTION2B_12 "In corso..."
 
 // --- Option2.C level 2
-#define OPTION2C_11 "Rotazione motore"
-#define OPTION2C_12 "In corso..."
+#define OPTION2C_10 "Rotaz. "
+#define OPTION2C_11 " min."
+#define OPTION2C_12 "Ciclo "
+#define OPTION2C_13 " di "
 
 // ******************************************* Option 1 - Parameters setting
 // --- Option3 level 1
@@ -72,7 +74,7 @@
 #define OPTION3AB "Tempo  Rotazioni"
 
 // --- Option3.A level 2
-#define OPTION3A_11 "Tempo 1 ciclo:"
+#define OPTION3A_11 "Tempo (min.)"
 #define OPTION3A_12 "Ruota      Ok"
 
 // --- Option3.B level 2
