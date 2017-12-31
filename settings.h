@@ -96,7 +96,7 @@
 //! for the limiters
 #define HIGH_SPEED 200
 //! Slow speed in RPM, used to move the gear for limits fine tuning
-#define LOW_SPEED 100
+#define LOW_SPEED 50
 //! 1 minut in ms
 #define ONE_MINUTE 60000
 
@@ -109,6 +109,7 @@
 
 #define WELCOME_DELAY 5000   ///< Delay (ms) of the welcome message when system starts
 #define COMMAND_DELAY 2000   ///< Delay (ms) showing the command execution result
+#define BUTTON_DELAY 500     ///< Buttons software debouncing delay
 #endif
 
 

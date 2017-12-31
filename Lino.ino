@@ -90,6 +90,8 @@ void loop(){
   if(sysStatus.optionChanged) {
     lcd.clear();
     sysStatus.optionChanged = false;
+    delay(BUTTON_DELAY);
+    attachInterrupt(IRQ_SETTING_BUTTON, switchOption, LOW); // re-enable the interrupts
     lcdShowOption();
     }
 
@@ -381,8 +383,7 @@ void loop(){
       if(sysStatus.optionsLevel >= MAXOPTIONS){
         sysStatus.optionsLevel = LCD_OPTION1;
       } // cycle options
-      delay(500);
-      attachInterrupt(IRQ_SETTING_BUTTON, switchOption, LOW); // re-enable the interrupts
+//      attachInterrupt(IRQ_SETTING_BUTTON, switchOption, LOW); // re-enable the interrupts
     } // Motor not running, options cycle
   }
 
@@ -558,7 +559,7 @@ void loop(){
 
     // Wait few ms to avoid that the previous button is read again by
     // the function
-    delay(500);
+    delay(BUTTON_DELAY);
 
     // Read the analog value from potentiometer until the OK button
     // is not pressed
