@@ -94,11 +94,28 @@
 
 //! Fast speed in RPM, used to move the gear when searching
 //! for the limiters
-#define HIGH_SPEED 200
+#define HIGH_SPEED 100
 //! Slow speed in RPM, used to move the gear for limits fine tuning
 #define LOW_SPEED 50
 //! 1 minut in ms
 #define ONE_MINUTE 60000
+
+/**
+ * Average expected number of steps to manage the acceleration
+ * curve.
+ * 
+ * During the first phase of the calibration we don't know exactly
+ * the number of steps. We only know that with a 1/16 microstepping setup
+ * of the Moon's SR4 controller the 90 degrees path is about 6500 steps.
+ * Based on this assumption we start the deceleration curve when we are around
+ * step 5000. Deceleration should stop when the LOW_SPEED is reached or when
+ * the limiter switch is set.
+ */
+#define DECELERATION_POINT 5000
+/**
+ * Acceleration/Deceleration increment in RPM
+ */
+ #define ACCELERATION_STEP 1
 
 // *********************
 // General parameters

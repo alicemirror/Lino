@@ -117,27 +117,45 @@ void loop(){
     int stepCount;
     int j;
     float startMillis, endMillis, elapsedMillis;
+    int acceleration;  ///< Current RPM speed
     
     // First step: rotates to right until the limiter is on
     // at high speed
+    acceleration = ACCELERATION_STEP;
+    motor.setSpeed(acceleration);  // Initial speed
     if(sysStatus.motorOn == false) {
-      motor.setSpeed(HIGH_SPEED);
       initRotation();
     }
     // Start motion
     sysStatus.motorDir = MOVE_RIGHT;
+    // Initialize the step counter for the acceleration / deceleration check
+    stepCount = 0;
     // Loop until the limiter switch is activated by interrupt
     // and disble the motor 
     while(sysStatus.rightLimit == false) {
       if(sysStatus.emergency == false) {
         motor.step(sysStatus.motorDir); // One step at a time
-      }
+        stepCount++;
+        // Check if we should accelerate or decelerate
+        if(stepCount > DECELERATION_POINT) {
+          // Deceleration if the high speed is not yet reached
+          if(acceleration > LOW_SPEED)
+          acceleration -= ACCELERATION_STEP;
+        } // Update deceleration
+        else {
+          // Acceleration
+          if(acceleration < HIGH_SPEED)
+          acceleration += ACCELERATION_STEP;
+        } // Update acceleration
+        // Update the motor speed
+        motor.setSpeed(acceleration);  // Initial speed
+      } 
       else {
         // Emergency, stop all activity
         setEmergency();
         return;
-      }
-    }
+      } // Emergency.
+    } // Loop until and switch
     // Step back steps then move slow to find exactly the right
     // limit position
     for(j = 0; j < STEP_BACK; j++) {
