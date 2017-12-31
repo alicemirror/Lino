@@ -73,8 +73,6 @@ void setup() {
   attachInterrupt(IRQ_RIGHT_LIMITER, switchRight, CHANGE);
   attachInterrupt(IRQ_EMERGENCY_BUTTON, emergency, CHANGE);
 
-  // Set stepper
-  motor.setSpeed(100); // set base speed in RPM
   // Motor disabled
   digitalWrite(ENABLE, LOW);
 
@@ -102,6 +100,9 @@ void loop(){
       // when the system is in emergency state
       doCommand(checkCommandButtons());
     }
+    else {
+      setEmergency();
+    }
   } // loop
 
   // ******************************************************
@@ -117,10 +118,10 @@ void loop(){
     
     // First step: rotates to right until the limiter is on
     // at high speed
-    motor.setSpeed(HIGH_SPEED);
-    // Enable the motor
-    digitalWrite(ENABLE, HIGH);
-    sysStatus.motorOn = true;
+    if(sysStatus.motorOn == false) {
+      motor.setSpeed(HIGH_SPEED);
+      initRotation();
+    }
     // Start motion
     sysStatus.motorDir = MOVE_RIGHT;
     // Loop until the limiter switch is activated by interrupt
@@ -131,10 +132,7 @@ void loop(){
       }
       else {
         // Emergency, stop all activity
-        digitalWrite(ENABLE, HIGH);
-        sysStatus.motorOn = false;
-        sysStatus.isRotating = false;
-        sysStatus.calibration = false;
+        setEmergency();
         return;
       }
     }
@@ -151,10 +149,7 @@ void loop(){
       }
       else {
         // Emergency, stop all activity
-        digitalWrite(ENABLE, LOW);
-        sysStatus.motorOn = false;
-        sysStatus.isRotating = false;
-        sysStatus.calibration = false;
+        setEmergency();
         return;
       }
     }
@@ -171,10 +166,7 @@ void loop(){
       }
       else {
         // Emergency, stop all activity
-        digitalWrite(ENABLE, LOW);
-        sysStatus.motorOn = false;
-        sysStatus.isRotating = false;
-        sysStatus.calibration = false;
+        setEmergency();
         return;
       }
     }
@@ -186,23 +178,13 @@ void loop(){
     // Calculate the motor RPM speed to cover the entire path in 1 minute (60k ms)
     sysStatus.baseSpeed = LOW_SPEED / (ONE_MINUTE / elapsedMillis);
 #ifdef _DEBUG
-      _debugSerial("*** countSteps() - Elapsed millis = ");
-      _debugSerial(String(elapsedMillis));
-      _debugSerialEndl();
-      _debugSerial("*** countSteps() - Number of steps = ");
-      _debugSerial(String(sysStatus.numSteps));
-      _debugSerialEndl();
-      _debugSerial("*** countSteps() - 1 minute base speed (RPM) = ");
-      _debugSerial(String(sysStatus.baseSpeed));
-      _debugSerialEndl();
+      countSteps_DEBUG(elapsedMillis);
 #endif
     // Step back steps to go out of the limiter switch
     // limit position
     for(j = 0; j < STEP_BACK; j++) {
       motor.step(MOVE_RIGHT);
     }
-    // Disable the motor
-    digitalWrite(ENABLE, LOW);
     sysStatus.motorOn = false;
     sysStatus.isRotating = false;
     // Set the next valid direction
@@ -216,7 +198,7 @@ void loop(){
    */
    void rotatePath() {
 #ifdef _DEBUG
-    float startMillis, endMillis, elapsedMillis;
+    float startMillis, endMillis;
 #endif
     int j;
 
@@ -241,31 +223,13 @@ void loop(){
       }
       else {
         // Emergency, stop all activity
-        digitalWrite(ENABLE, LOW);
-        sysStatus.motorOn = false;
-        sysStatus.isRotating = false;
-        sysStatus.calibration = false;
+        setEmergency();
         return;
       }
     } // Motion loop
 #ifdef _DEBUG
     endMillis = millis(); // End time
-    elapsedMillis = endMillis - startMillis; // Elapsed time
-    _debugSerial("*** rotatePath() - Elapsed millis = ");
-    _debugSerial(String(elapsedMillis));
-    _debugSerialEndl();
-    _debugSerial("*** rotatePath() - Number of steps = ");
-    _debugSerial(String(sysStatus.numSteps));
-    _debugSerialEndl();
-    _debugSerial("*** rotatePath() -  Base speed (RPM per 1 minute) = ");
-    _debugSerial(String(sysStatus.baseSpeed));
-    _debugSerialEndl();
-    _debugSerial("*** rotatePath() -  Cycle duration in minutes = ");
-    _debugSerial(String(savedParameters.cycleTime));
-    _debugSerialEndl();
-    _debugSerial("*** rotatePath() -  Current path speed (RPM) = ");
-    _debugSerial(String(sysStatus.baseSpeed/savedParameters.cycleTime));
-    _debugSerialEndl();
+    rotatePath_DEBUG(startMillis, endMillis);
 #endif
     // Disable rotation status
     sysStatus.isRotating = false;
@@ -273,6 +237,9 @@ void loop(){
     invertDirection();
    }
 
+  /**
+   * Invert the direction of the motion
+   */
   void invertDirection(){
     if(sysStatus.motorDir == MOVE_RIGHT)
       sysStatus.motorDir = MOVE_LEFT;
@@ -310,7 +277,6 @@ void loop(){
   // ******************************************************
   // Display functions
   // ******************************************************
-
   /**
    * \brief Start message
    */
@@ -365,6 +331,30 @@ void loop(){
         lcd.print(OPTIONXAB);
         break;
     }
+  }
+
+  // ******************************************************
+  // Accessory functions
+  // ******************************************************
+
+  /**
+   * Initialize the motor parameters to start rotating
+   */
+  void initRotation() {
+    digitalWrite(ENABLE, HIGH);
+    sysStatus.motorOn = true;
+    sysStatus.isRotating = true;
+  }
+
+  /**
+   * Set the emergency status parameters and disable motors
+   */
+  void setEmergency(){
+    // Emergency, stop all activity
+    digitalWrite(ENABLE, LOW);
+    sysStatus.motorOn = false;
+    sysStatus.isRotating = false;
+    sysStatus.calibration = false;
   }
 
   // ******************************************************
@@ -458,7 +448,6 @@ void loop(){
               lcd.print(OPTION2C_10);
               lcd.print(String(savedParameters.cycleTime));
               lcd.print(OPTION2C_11);
-              digitalWrite(ENABLE, HIGH);
               // Loop over the number of cycles
               for(j = 0; j < savedParameters.numCycles; j++){
                 lcd.setCursor(0,1);
@@ -468,7 +457,6 @@ void loop(){
                 lcd.print(String(savedParameters.numCycles));
                 rotatePath();
               }
-              digitalWrite(ENABLE, LOW);
             }
           }
           else if(side == COMMAND_RIGHT) {
@@ -623,10 +611,50 @@ void loop(){
     attachInterrupt(IRQ_RIGHT_LIMITER, switchRight, CHANGE);
   }
 
+#ifdef _DEBUG
+  // ******************************************************
+  // Debug functions
+  // ******************************************************
+
+  void countSteps_DEBUG(float elapsedms) {
+    _debugSerial("*** countSteps() - Elapsed millis = ");
+    _debugSerial(String(elapsedms));
+    _debugSerialEndl();
+    _debugSerial("*** countSteps() - Number of steps = ");
+    _debugSerial(String(sysStatus.numSteps));
+    _debugSerialEndl();
+    _debugSerial("*** countSteps() - 1 minute base speed (RPM) = ");
+    _debugSerial(String(sysStatus.baseSpeed));
+    _debugSerialEndl();
+  }
+
+  /**
+   * Send to serial the elapsed time and other status parameters
+   * from rotatePath() function.
+   */
+  void rotatePath_DEBUG(float startms, float endms) {
+    float elapsedMillis;
+
+    elapsedMillis = endms - startms; // Elapsed time
+    _debugSerial("*** rotatePath() - Elapsed millis = ");
+    _debugSerial(String(elapsedMillis));
+    _debugSerialEndl();
+    _debugSerial("*** rotatePath() - Number of steps = ");
+    _debugSerial(String(sysStatus.numSteps));
+    _debugSerialEndl();
+    _debugSerial("*** rotatePath() -  Base speed (RPM per 1 minute) = ");
+    _debugSerial(String(sysStatus.baseSpeed));
+    _debugSerialEndl();
+    _debugSerial("*** rotatePath() -  Cycle duration in minutes = ");
+    _debugSerial(String(savedParameters.cycleTime));
+    _debugSerialEndl();
+    _debugSerial("*** rotatePath() -  Current path speed (RPM) = ");
+    _debugSerial(String(sysStatus.baseSpeed/savedParameters.cycleTime));
+    _debugSerialEndl();
+  }
   /**
    * Debug function. Send a debug string to the serial to USB port.
    */
-#ifdef _DEBUG
   void _debugSerial(String m) {
     Serial << m;
   }
