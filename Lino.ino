@@ -401,7 +401,6 @@ void loop(){
       if(sysStatus.optionsLevel >= MAXOPTIONS){
         sysStatus.optionsLevel = LCD_OPTION1;
       } // cycle options
-//      attachInterrupt(IRQ_SETTING_BUTTON, switchOption, LOW); // re-enable the interrupts
     } // Motor not running, options cycle
   }
 
@@ -461,31 +460,46 @@ void loop(){
               lcd.print(OPTION2A_12);
               lcd.print(String(savedParameters.numCycles));
               delay(COMMAND_DELAY); // Show the message then continue
-            }
+            } // Show info
             else {                            // Motor running, start rotate
-              lcd.setCursor(0,0);
-              lcd.print(OPTION2C_10);
-              lcd.print(String(savedParameters.cycleTime));
-              lcd.print(OPTION2C_11);
-              // Loop over the number of cycles
-              for(j = 0; j < savedParameters.numCycles; j++){
+              // If no calibration, rotation can't start
+              if(sysStatus.calibration) {
+                lcd.setCursor(0,0);
+                lcd.print(OPTION2C_10);
+                lcd.print(String(savedParameters.cycleTime));
+                lcd.print(OPTION2C_11);
+                // Loop over the number of cycles
+                for(j = 0; j < savedParameters.numCycles; j++){
+                  lcd.setCursor(0,1);
+                  lcd.print(OPTION2C_12);
+                  lcd.print(String(j + 1));
+                  lcd.print(OPTION2C_13);
+                  lcd.print(String(savedParameters.numCycles));
+                  rotatePath();
+                } // Cycles rotation
+              } // Calibration Ok
+              else {
+                // Calibration needed message
+                lcd.clear();
+                lcd.setCursor(0,0);
+                lcd.print(OPTION2D_11);
                 lcd.setCursor(0,1);
-                lcd.print(OPTION2C_12);
-                lcd.print(String(j + 1));
-                lcd.print(OPTION2C_13);
-                lcd.print(String(savedParameters.numCycles));
-                rotatePath();
+                lcd.print(OPTION2D_12);
+                delay(COMMAND_DELAY); // Show the message then continue
+                // Force showing the calibration option and reset the parameters
+                setEmergency();
+                sysStatus.optionsLevel = LCD_OPTION1;
               }
-            }
-          }
-          else if(side == COMMAND_RIGHT) {
+            } // Start rotation
+          } // Command left
+          else if(side == COMMAND_RIGHT) {    // Start/Stop motor cycle rotation
             lcd.setCursor(0,0);
             lcd.print(OPTION2B_11);
             lcd.setCursor(0,1);
             lcd.print(OPTION2B_12);
             sysStatus.motorOn = !sysStatus.motorOn;
             sysStatus.isRotating = false;
-          }
+          } // Command right
           break;
         case LCD_OPTION3:               // Parameters setting
           if(side == COMMAND_LEFT) {

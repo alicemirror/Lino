@@ -20,7 +20,7 @@
 #ifdef ITALIAN
 
 #define START1 "BalearicDynamics"
-#define START2 "Lino 1.0.20 IT"
+#define START2 "Lino 1.0.21 IT"
 
 // Confirm-cancel option
 #define OPTION_OK_NO "   OK   Annulla"
@@ -67,6 +67,10 @@
 #define OPTION2C_11 " min."
 #define OPTION2C_12 "Ciclo "
 #define OPTION2C_13 " di "
+
+// --- Option2.d level 2
+#define OPTION2D_11 "   Effettuare"
+#define OPTION2D_12 "  Calibrazione!"
 
 // ******************************************* Option 1 - Parameters setting
 // --- Option3 level 1

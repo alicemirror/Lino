@@ -94,7 +94,7 @@
 
 //! Fast speed in RPM, used to move the gear when searching
 //! for the limiters
-#define HIGH_SPEED 100
+#define HIGH_SPEED 150
 //! Slow speed in RPM, used to move the gear for limits fine tuning
 #define LOW_SPEED 50
 //! 1 minut in ms
