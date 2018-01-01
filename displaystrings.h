@@ -13,14 +13,14 @@
 #define _STRINGS
 
 // Language settings
-#define ENGLISH "EN"
+#undef ENGLISH "EN"
 #define ITALIAN "IT"
-#define SPANISH "ES"
+#undef SPANISH "ES"
 
 #ifdef ITALIAN
 
 #define START1 "BalearicDynamics"
-#define START2 "Lino 1.0.21 IT"
+#define START2 "Lino 1.0.22 IT"
 
 // Confirm-cancel option
 #define OPTION_OK_NO "   OK   Annulla"
@@ -46,7 +46,7 @@
 #define OPTION1C_11 "Calibrazione"
 #define OPTION1C_12 "Completata"
 
-// ******************************************* Option 1 - Execute action
+// ******************************************* Option 2 - Execute action
 // --- Option2 level 1
 #define OPTION2 "  Esegui azione"
 // Depending on the machine status, it is shown one of
@@ -72,7 +72,7 @@
 #define OPTION2D_11 "   Effettuare"
 #define OPTION2D_12 "  Calibrazione!"
 
-// ******************************************* Option 1 - Parameters setting
+// ******************************************* Option 3 - Parameters setting
 // --- Option3 level 1
 #define OPTION3 "  Set parametri"
 #define OPTION3AB "Tempo  Rotazioni"
@@ -93,7 +93,7 @@
 #define OPTION3D_11 "Impostaz. Cicli"
 #define OPTION3D_12 "Completato"
 
-// ******************************************* Option 1 - Save settings
+// ******************************************* Option 4 - Save settings
 // --- Option4 level 1
 #define OPTION4 "Salva impostaz."
 #define OPTION4AB OPTION_OK_NO
@@ -105,6 +105,19 @@
 // --- Option4.b level 2
 #define OPTION4B_11 "  Salvataggio"
 #define OPTION4B_12 "  Annullato"
+
+// ******************************************* Option 5 - Disable motor
+// --- Option5 level 1
+#define OPTION5 "Disbilita Motore"
+#define OPTION5AB OPTION_OK_NO
+
+// --- Option4.A level 2
+#define OPTION5A_11 "  Stato Motore"
+#define OPTION5A_12 "  Disabilitato"
+
+// --- Option4.b level 2
+#define OPTION5B_11 OPTION5A_11
+#define OPTION5B_12 "     Attivo"
 
 #endif
 

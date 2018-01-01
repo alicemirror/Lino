@@ -16,13 +16,14 @@
 #define DEFAULTCYCLES 1       ///< Number of cycles by default
 #define DEFAULTSPEED 1        ///< Default motion speed in minutes per cycle
 #define DEFAULTOPTION 1       ///< Default startup option shown
-#define MAXOPTIONS 5          ///< Max number of options (corresponding to emergency button)
+#define MAXOPTIONS 6          ///< Max number of options (corresponding to emergency button)
 
 #define LCD_OPTION1 1         ///< Menu option #1
 #define LCD_OPTION2 2         ///< Menu option #2
 #define LCD_OPTION3 3         ///< Menu option #3
 #define LCD_OPTION4 4         ///< Menu option #4
 #define LCD_OPTION5 5         ///< Menu option #5
+#define LCD_OPTION6 6         ///< Menu option #6
 
 #define COMMAND_NOCOMMAND 0   ///< No command button pressed
 #define COMMAND_LEFT 1        ///< Left command button ID
@@ -31,7 +32,7 @@
 #define MIN_TIME 1            ///< Minimum one-cycle duration (minutes)
 #define MAX_TIME 6            ///< Maximum one-cycle duration (minutes)
 #define MIN_CYCLES 1          ///< Minimum number of cycles
-#define MAX_CYCLES 51         ///< Maximum number of cycles
+#define MAX_CYCLES 50         ///< Maximum number of cycles
 #define MIN_ANALOG 0          ///< Minimum analog reading
 #define MAX_ANALOG 1023       ///< Maximum analog reading (depends on the analog resolution)
 

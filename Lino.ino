@@ -28,6 +28,8 @@ Stepper motor = Stepper(STEPS, STEP, DIR);
 options sysStatus;
 configObject savedParameters;
 
+boolean initSys;  ///< Initialization flag
+
 /**
  * \breif Initialization function
  */
@@ -60,9 +62,6 @@ void setup() {
   sysStatus.emergency = false;
   sysStatus.rightLimit = false;
   sysStatus.leftLimit = false;
-  
-  // Show the initial option on the LCD
-  lcdShowOption();
 
   // Get the last saved configuration parameters from EEPROM
   loadConfiguration();
@@ -76,15 +75,50 @@ void setup() {
   // Motor disabled
   digitalWrite(ENABLE, LOW);
 
+  initSys = true;
+
   // Initialize the path and position
-  sysStatus.calibration = false;
-  countSteps();
+//  sysStatus.calibration = false;
+//  lcd.clear();
+//  lcd.setCursor(0,0);
+//  lcd.print(OPTION1B_11);
+//  lcd.setCursor(0,1);
+//  lcd.print(OPTION1B_12);
+//  countSteps();
+//  lcd.clear();
+//  lcd.setCursor(0,0);
+//  lcd.print(OPTION1C_11);
+//  lcd.setCursor(0,1);
+//  lcd.print(OPTION1C_12);
+//  delay(COMMAND_DELAY); // Show the message then continue
+  
+  // Show the initial option on the LCD
+  lcdShowOption();
 }
 
 /**
  * Main loop
  */
 void loop(){
+
+  if(initSys) {
+    // Initialize the path and position
+    sysStatus.calibration = false;
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print(OPTION1B_11);
+    lcd.setCursor(0,1);
+    lcd.print(OPTION1B_12);
+    countSteps();
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print(OPTION1C_11);
+    lcd.setCursor(0,1);
+    lcd.print(OPTION1C_12);
+    delay(COMMAND_DELAY); // Show the message then continue
+    lcdShowOption();
+    initSys = false;
+}
 
   // Check if the option status has changed and update the display
   if(sysStatus.optionChanged) {
@@ -317,13 +351,13 @@ void loop(){
   void lcdShowOption() {
     lcd.display();
     switch(sysStatus.optionsLevel) {
-      case LCD_OPTION1:
+      case LCD_OPTION1:       // Start activity
         lcd.setCursor(0,0);
         lcd.print(OPTION1);
         lcd.setCursor(0,1);
         lcd.print(OPTION1AB);
         break;
-      case LCD_OPTION2:
+      case LCD_OPTION2:       // Execute action
         lcd.setCursor(0,0);
         lcd.print(OPTION2);
         lcd.setCursor(0,1);
@@ -332,19 +366,25 @@ void loop(){
         else
           lcd.print(OPTION2AB_11);
         break;
-      case LCD_OPTION3:
+      case LCD_OPTION3:     // Parameters setting
         lcd.setCursor(0,0);
         lcd.print(OPTION3);
         lcd.setCursor(0,1);
         lcd.print(OPTION3AB);
         break;
-      case LCD_OPTION4:
+      case LCD_OPTION4:     // Save settings
         lcd.setCursor(0,0);
         lcd.print(OPTION4);
         lcd.setCursor(0,1);
         lcd.print(OPTION4AB);
         break;
-      case LCD_OPTION5:     // Emergency STOP
+      case LCD_OPTION5:     // Disable motor
+        lcd.setCursor(0,0);
+        lcd.print(OPTION5);
+        lcd.setCursor(0,1);
+        lcd.print(OPTION5AB);
+        break;
+      case LCD_OPTION6:     // Emergency STOP
         lcd.setCursor(0,0);
         lcd.print(OPTIONX);
         lcd.setCursor(0,1);
@@ -545,6 +585,22 @@ void loop(){
             lcd.print(OPTION4B_11);
             lcd.setCursor(0,1);
             lcd.print(OPTION4B_12);
+          }
+          delay(COMMAND_DELAY); // Show the message then continue
+          break;
+        case LCD_OPTION5:               // Disable motor
+          if(side == COMMAND_LEFT) {
+            setEmergency();
+            lcd.setCursor(0,0);
+            lcd.print(OPTION5A_11);
+            lcd.setCursor(0,1);
+            lcd.print(OPTION5A_12);
+          }
+          else  if(side == COMMAND_RIGHT) {
+            lcd.setCursor(0,0);
+            lcd.print(OPTION5B_11);
+            lcd.setCursor(0,1);
+            lcd.print(OPTION5B_12);
           }
           delay(COMMAND_DELAY); // Show the message then continue
           break;
