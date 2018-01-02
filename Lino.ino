@@ -118,7 +118,7 @@ void loop(){
     delay(COMMAND_DELAY); // Show the message then continue
     lcdShowOption();
     initSys = false;
-}
+  }
 
   // Check if the option status has changed and update the display
   if(sysStatus.optionChanged) {
@@ -629,7 +629,7 @@ void loop(){
       // We are in emergency status
       sysStatus.emergency = true; // Set the emergency flag
       digitalWrite(EMERGENCY_LED, HIGH);  // Enable the emergency LED 
-      sysStatus.optionsLevel = LCD_OPTION5; // Force the emergency option status ID
+      sysStatus.optionsLevel = LCD_OPTION6; // Force the emergency option status ID
       sysStatus.optionChanged = true; // Set the option status changed
     }
     attachInterrupt(IRQ_EMERGENCY_BUTTON, emergency, CHANGE);
