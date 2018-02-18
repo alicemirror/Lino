@@ -7,11 +7,22 @@ The software also includes a series of controls buttons based on interrupts to l
 
 ## Hardware
 ### Arduino Mega 2560 as the main micro controller
-
+![Arduino Mega 2560](https://raw.githubusercontent.com/alicemirror/Lino/master/Images/arduino-mega-2560-500x500.jpg)
 ### 24V 5A Stepper motor
 ![Moon's Stepper Motor](https://raw.githubusercontent.com/alicemirror/Lino/master/Images/IMG_20171226_131208.jpg)
 ### Moon's SR4 stepper motor controller (supporting microstepping)
 ![Moon's Motor Controller](https://raw.githubusercontent.com/alicemirror/Lino/master/Images/IMG_20180102_110302.jpg)
-
 ### A custom circuit shield and some discrete components (buttons, LEDs, variable resistors etc.)
+![Prototype Mega Shield](https://raw.githubusercontent.com/alicemirror/Lino/master/Images/IMG_20171228_202053.jpg)
+
+## This prototype
+### 3D Printing objects
+You can find in the *material* folder the 3D printed STL files used to build this prototype. Below some images of the components rendered on CAD and the STL files
+![Arduino Mega 2560](https://raw.githubusercontent.com/alicemirror/Lino/master/Images/LinoRendering.png)
+![Arduino Mega 2560](https://raw.githubusercontent.com/alicemirror/Lino/master/Images/STL-Files.png)
+
+### Schematics and PCB simulation of the Mega Shield
+![Arduino Mega 2560](https://raw.githubusercontent.com/alicemirror/Lino/master/Images/LinoRendering.png)
+![Arduino Mega 2560](https://raw.githubusercontent.com/alicemirror/Lino/master/Images/STL-Files.png)
+
 
