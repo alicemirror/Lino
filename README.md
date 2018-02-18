@@ -23,4 +23,4 @@ You can find in the *material* folder the 3D printed STL files used to build thi
 
 ### Schematics and PCB simulation of the Mega Shield
 ![Circuit Schematics](https://raw.githubusercontent.com/alicemirror/Lino/master/Images/Schematics.png)
-![PCB Layout and Model](https://raw.githubusercontent.com/alicemirror/Lino/master/Imges/PCB-Layout.png)
+![PCB Layout and Model](https://raw.githubusercontent.com/alicemirror/Lino/master/Images/PCB-Layout.png)
