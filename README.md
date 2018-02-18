@@ -15,14 +15,12 @@ The software also includes a series of controls buttons based on interrupts to l
 ### A custom circuit shield and some discrete components (buttons, LEDs, variable resistors etc.)
 ![Prototype Mega Shield](https://raw.githubusercontent.com/alicemirror/Lino/master/Images/IMG_20171228_202053.jpg)
 
-## This prototype
+## The prototype
 ### 3D Printing objects
 You can find in the *material* folder the 3D printed STL files used to build this prototype. Below some images of the components rendered on CAD and the STL files
-![Arduino Mega 2560](https://raw.githubusercontent.com/alicemirror/Lino/master/Images/LinoRendering.png)
-![Arduino Mega 2560](https://raw.githubusercontent.com/alicemirror/Lino/master/Images/STL-Files.png)
+![3D Rendering of the printable material](https://raw.githubusercontent.com/alicemirror/Lino/master/Images/LinoRendering.png)
+![STL Files Simulation](https://raw.githubusercontent.com/alicemirror/Lino/master/Images/STL-Files.png)
 
 ### Schematics and PCB simulation of the Mega Shield
-![Arduino Mega 2560](https://raw.githubusercontent.com/alicemirror/Lino/master/Images/LinoRendering.png)
-![Arduino Mega 2560](https://raw.githubusercontent.com/alicemirror/Lino/master/Images/STL-Files.png)
-
-
+![Circuit Schematics](https://raw.githubusercontent.com/alicemirror/Lino/master/Images/Schematics.png)
+![PCB Layout and Model](https://raw.githubusercontent.com/alicemirror/Lino/master/Imges/PCB-Layout.png)
